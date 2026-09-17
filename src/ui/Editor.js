@@ -327,8 +327,8 @@ export class Editor {
     // (`camera.maxPolar`), so a moon parked higher than this is off the top of
     // the frame and only its glare is ever on screen — which is exactly why it
     // used to be invisible at the old 0.72.
-    R(moon, s.moon, 'azimuth', 0, Math.PI * 2, 0.01, 'rotation (azimuth)');
-    R(moon, s.moon, '고도', -0.05, 0.6, 0.005, '고도');
+    R(moon, s.moon, 'azimuth', 0, Math.PI * 2, 0.01, '회전 (방위각)');
+    R(moon, s.moon, 'elevation', -0.05, 0.6, 0.005, '고도');
     R(moon, s, 'disc', 0, 40, 0.1, '밝기');
     R(moon, s, 'discSize', 0.0005, 0.05, 0.0005, '크기');
     moon.addColor(s.moon, 'color').name('색상');
