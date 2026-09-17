@@ -2019,7 +2019,7 @@ export class Editor {
     R(mist, m, 'intensity', 0, 3, 0.01, 'master ×');
     R(mist, m, 'drag', 0.05, 10, 0.05, '공기 저항');
     R(mist, m, 'gravity', -30, 0, 0.1, '낙하 (m/s²)');
-    R(mist, m, 'haze', 0, 90, 1, 'cloud puffs');
+    R(mist, m, 'puffs', 0, 90, 1, 'cloud puffs');
     R(mist, m, 'puffSpeed', 0, 10, 0.05, 'puffs thrown at (m/s)');
     R(mist, m, 'puffRise', -2, 4, 0.05, 'puffs lift (m/s)');
     R(mist, m, 'puffLife', 0.1, 4, 0.05, 'puffs last (s)');
