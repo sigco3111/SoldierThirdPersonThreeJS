@@ -276,7 +276,7 @@ export class Editor {
     haze.addColor(h, 'sunColor').name('달빛 방향 색상');
     // 1/m, so the number itself means very little; the readout under it is what
     // you actually aim.
-    R(haze, h, '밀도', 0, 0.03, 0.0002, '원거리 헤이즈(1/m)');
+    R(haze, h, 'density', 0, 0.03, 0.0002, '원거리 헤이즈(1/m)');
     R(haze, h, 'start', 0, 40, 0.5, '맑은 공기 거리(m)');
     haze
       .add(
@@ -296,7 +296,7 @@ export class Editor {
     // they decide whether it is a ground effect or a wall.
     R(haze, h, 'ground', 0, 0.12, 0.001, '지면 안개(1/m)');
     R(haze, h, 'base', -12, 12, 0.1, '안개 바닥(m)');
-    R(haze, h, '감쇠', 0.5, 40, 0.1, '안개 두께(m)');
+    R(haze, h, 'falloff', 0.5, 40, 0.1, '안개 두께(m)');
     // How far the air goes toward the moon's colour looking down the beam. The
     // highest-value control in this folder: at 0 the haze is a flat wash from
     // every angle, which is the one thing real air never is.
@@ -307,12 +307,12 @@ export class Editor {
     const s = settings.sky;
     const sky = folder.addFolder('하늘');
     sky.add(s, 'enabled').name('하늘 켜기');
-    sky.addColor(s, '천정').name('천정');
-    R(sky, s, '그라디언트', 0.1, 3, 0.01, '그라디언트');
+    sky.addColor(s, 'zenith').name('천정');
+    R(sky, s, 'gradient', 0.1, 3, 0.01, '그라디언트');
     R(sky, s, 'sunGlow', 0, 12, 0.05, '달 후광');
     R(sky, s, 'sunGlowPower', 1, 60, 0.5, '후광 집중도');
     R(sky, s, 'broadGlow', 0, 3, 0.01, '광역 광량');
-    R(sky, s, '노출', 0, 3, 0.01, '하늘 노출');
+    R(sky, s, 'exposure', 0, 3, 0.01, '하늘 노출');
 
     // The moon. `disc size` is 1 - cos of the half-angle, so the numbers look
     // small — 0.006 is about six degrees across, which is a dozen times life
@@ -371,9 +371,9 @@ export class Editor {
     const stars = sky.addFolder('별');
     const st = s.stars;
     stars.add(st, 'enabled').name('별 켜기');
-    R(stars, st, '밀도', 40, 600, 5, '밀도');
-    R(stars, st, '밝기', 0, 6, 0.05, '밝기');
-    R(stars, st, '반짝임', 0, 1, 0.01, '반짝임');
+    R(stars, st, 'density', 40, 600, 5, '밀도');
+    R(stars, st, 'brightness', 0, 6, 0.05, '밝기');
+    R(stars, st, 'twinkle', 0, 1, 0.01, '반짝임');
     R(stars, st, 'horizon', 0, 0.6, 0.01, 'gone below (sin elev)');
 
     this._buildGroundFog(folder);
@@ -402,7 +402,7 @@ export class Editor {
     R(folder, f, 'count', 0, 512, 1, '안개 입자 수 (비용)');
     R(folder, f, 'life', 1, 60, 0.5, '수명 (초)');
     R(folder, f, 'lifeVariance', 0, 0.95, 0.01, '수명 편차');
-    R(folder, f, '불투명도', 0, 1, 0.01, '불투명도');
+    R(folder, f, 'opacity', 0, 1, 0.01, '불투명도');
 
     // Where it comes from. `follow` parks the emitter on the character, which is
     // what keeps mist around the camera on an endless floor; off, x/z are a
@@ -432,7 +432,7 @@ export class Editor {
     R(look, f, 'sizeEnd', 0.2, 60, 0.1, '소멸 시 크기 (m)');
     look.addColor(f, 'color').name('안개 색상');
     look.addColor(f, 'litColor').name('달빛 방향 색상');
-    R(look, f, '달빛', 0, 1.5, 0.01, '달빛');
+    R(look, f, 'moonlight', 0, 1.5, 0.01, '달빛');
     R(look, f, 'moonPower', 0.5, 12, 0.1, '달빛 집중도');
     R(look, f, 'softness', 0.02, 1, 0.01, '가장자리 부드러움');
     R(look, f, 'fadeIn', 0.01, 0.9, 0.01, '나타남 (수명 대비)');
@@ -471,8 +471,8 @@ export class Editor {
 
     const shape = folder.addFolder('미세 형태');
     R(shape, t, 'lacunarity', 1.5, 3, 0.01, '옥타브 배율');
-    R(shape, t, '게인', 0.2, 0.7, 0.01, '옥타브 감쇠');
-    R(shape, t, '시드', 0, 60, 0.1, '시드').listen();
+    R(shape, t, 'gain', 0.2, 0.7, 0.01, '옥타브 감쇠');
+    R(shape, t, 'seed', 0, 60, 0.1, '시드').listen();
     shape
       .add(
         {
@@ -512,7 +512,7 @@ export class Editor {
     const R = Editor.range;
 
     folder.add(g, 'enabled').name('나뭇잎 켜기');
-    R(folder, g, '크기', 0.02, 0.6, 0.005, '잎 길이 (m)');
+    R(folder, g, 'size', 0.02, 0.6, 0.005, '잎 길이 (m)');
     R(folder, g, 'sizeVariance', 0, 0.9, 0.01, '크기 편차');
 
     // The sheet is a daylight photograph of a green beech and this stage is a
@@ -522,10 +522,10 @@ export class Editor {
     look.addColor(g, 'tint').name('색조 섞기');
     R(look, g, 'tintAmount', 0, 1, 0.01, '색조 섞기 양');
     look.addColor(g, 'backlightColor').name('잎 통과 색상');
-    R(look, g, '역광', 0, 3, 0.01, '역광');
+    R(look, g, 'backlight', 0, 3, 0.01, '역광');
     R(look, g, 'backlightPower', 1, 24, 0.5, '역광 집중도');
-    R(look, g, '거칠기', 0.02, 1, 0.01, '거칠기');
-    R(look, g, '법선 크기', 0, 3, 0.05, '요철 (법선)');
+    R(look, g, 'roughness', 0.02, 1, 0.01, '거칠기');
+    R(look, g, 'normalScale', 0, 3, 0.05, '요철 (법선)');
 
     // The cut-out. Lower is a fatter leaf and a rougher edge; the coverage
     // switch is what keeps that edge from crawling, and it is the only control
@@ -604,7 +604,7 @@ export class Editor {
     // lets a leaf be kicked again from where it came down.
     const flight = litter.addFolder('비행');
     R(flight, l, 'flight', 0.1, 5, 0.05, '비행 시간 (초)');
-    R(flight, l, '공기 저항', 0.1, 8, 0.05, '공기 저항');
+    R(flight, l, 'drag', 0.1, 8, 0.05, '공기 저항');
     R(flight, l, 'swirl', 0, 1.5, 0.01, '소용돌이 (m)');
     R(flight, l, 'swirlSpeed', 0, 20, 0.1, '소용돌이 속도');
     R(flight, l, 'spin', 0, 60, 0.5, '회전 (rad/s)');
@@ -685,14 +685,14 @@ export class Editor {
     const sigil = folder.addFolder('1 - 인장');
     const g = a.sigil;
     R(sigil, g, 'radius', 0.5, 6, 0.05, '반경 (m)');
-    R(sigil, g, '띄움', 0, 0.4, 0.005, '바닥에서 띄움 (m)');
+    R(sigil, g, 'lift', 0, 0.4, 0.005, '바닥에서 띄움 (m)');
     sigil.addColor(g, 'color').name('선 색상');
     sigil.addColor(g, 'coreColor').name('핵심 색상');
     R(sigil, g, 'intensity', 0, 8, 0.05, '밝기');
     R(sigil, g, 'spin', -2, 2, 0.01, '초당 회전');
-    R(sigil, g, '눈금', 4, 120, 1, '눈금');
-    R(sigil, g, '룬', 3, 40, 1, '룬');
-    R(sigil, g, '살', 2, 24, 1, '살');
+    R(sigil, g, 'ticks', 4, 120, 1, '눈금');
+    R(sigil, g, 'runes', 3, 40, 1, '룬');
+    R(sigil, g, 'spokes', 2, 24, 1, '살');
     R(sigil, g, 'width', 0.002, 0.06, 0.001, '선 굵기');
     R(sigil, g, 'softness', 0.001, 0.06, 0.001, '페더');
     R(sigil, g, 'haze', 0, 2, 0.01, '내부 빛');
@@ -712,7 +712,7 @@ export class Editor {
     R(pillar, p, 'intensity', 0, 6, 0.01, '밝기');
     R(pillar, p, 'corePower', 0.2, 8, 0.05, '핵심 집중도');
     R(pillar, p, 'rimPower', 0.2, 10, 0.05, '림 집중도');
-    R(pillar, p, '림', 0, 3, 0.01, '림 강도');
+    R(pillar, p, 'rim', 0, 3, 0.01, '림 강도');
     R(pillar, p, 'topFade', 0.02, 0.95, 0.01, '이만큼 흐려짐 (비율)');
     R(pillar, p, 'streaks', 0, 2, 0.01, '낙하 빛');
     R(pillar, p, 'streakScale', 0.1, 8, 0.05, '줄무늬 크기');
@@ -754,13 +754,13 @@ export class Editor {
     burst.addColor(bu, 'color').name('파동 색상');
     burst.addColor(bu, 'coreColor').name('핵심 색상');
     R(burst, bu, 'intensity', 0, 8, 0.05, '밝기');
-    R(burst, bu, '꽃잎', 1, 48, 1, '꽃잎');
+    R(burst, bu, 'petals', 1, 48, 1, '꽃잎');
     R(burst, bu, 'petalWidth', 0.005, 0.4, 0.005, '꽃잎 너비');
     R(burst, bu, 'petalLength', 0.1, 1, 0.01, '꽃잎 길이');
     R(burst, bu, 'ringWidth', 0.005, 0.3, 0.005, '선단 너비');
     R(burst, bu, 'softness', 0.005, 0.5, 0.005, '페더');
     R(burst, bu, 'core', 0, 6, 0.05, '중심 섬광');
-    R(burst, bu, '띄움', 0, 0.3, 0.005, '바닥에서 띄움 (m)');
+    R(burst, bu, 'lift', 0, 0.3, 0.005, '바닥에서 띄움 (m)');
 
     // Layer 5. The only loose thing in the ability, and the reason the other
     // four read as one event rather than as four decals in the same place.
@@ -772,19 +772,19 @@ export class Editor {
     R(embers, e, 'rate', 0, 120, 1, '유지 중 초당');
     R(embers, e, 'gatherRate', 0, 60, 1, '모으는 중 초당');
     R(embers, e, 'burst', 0, 300, 1, '도착 시');
-    R(embers, e, '퍼짐', 0.1, 2, 0.01, '태어남 위치 (인장 대비)');
+    R(embers, e, 'spread', 0.1, 2, 0.01, '태어남 위치 (인장 대비)');
     R(embers, e, 'life', 0.2, 8, 0.05, '하나의 수명 (초)');
     R(embers, e, 'speed', 0, 6, 0.05, '떠나는 속도 (m/s)');
     R(embers, e, 'spawnHeight', 0, 4, 0.05, '최대 발생 높이 (m)');
-    R(embers, e, '공기 저항', 0.05, 6, 0.05, '공기 저항');
+    R(embers, e, 'drag', 0.05, 6, 0.05, '공기 저항');
     R(embers, e, 'rise', 0, 8, 0.05, '끌어올림 가속도 (m/s²)');
-    R(embers, e, '크기', 0.005, 0.4, 0.005, '크기 (m)');
+    R(embers, e, 'size', 0.005, 0.4, 0.005, '크기 (m)');
     R(embers, e, 'grow', 0, 3, 0.01, '성장 배율');
     R(embers, e, 'sway', 0, 2, 0.01, '떠돌이 (m)');
     R(embers, e, 'swaySpeed', 0, 6, 0.05, '떠돌이 속도');
-    R(embers, e, '광배', 0, 2, 0.01, '광배');
+    R(embers, e, 'halo', 0, 2, 0.01, '광배');
     R(embers, e, 'sharpness', 0.01, 0.6, 0.005, '가장자리 강도');
-    R(embers, e, '반짝임', 0, 1, 0.01, '반짝임');
+    R(embers, e, 'twinkle', 0, 1, 0.01, '반짝임');
     R(embers, e, 'spin', 0, 12, 0.05, '회전 속도 (rad/s)');
 
     // The one part of it that lights anything at all.
@@ -794,7 +794,7 @@ export class Editor {
     R(light, l, 'intensity', 0, 40, 0.1, '유지 중');
     R(light, l, 'flash', 0, 120, 0.5, '도착 시');
     R(light, l, 'height', 0, 1.5, 0.01, '위치 (몸 높이 대비)');
-    R(light, l, '거리', 1, 40, 0.5, '도달 (m)');
+    R(light, l, 'distance', 1, 40, 0.5, '도달 (m)');
     R(light, l, 'decay', 0.5, 4, 0.05, '감쇠');
   }
 
@@ -843,16 +843,16 @@ export class Editor {
     const glow = folder.addFolder('1 - 기본 발광');
     const g = s.glow;
     R(glow, g, 'radius', 0.5, 8, 0.05, '반경 (m)');
-    R(glow, g, '띄움', 0, 0.4, 0.005, '바닥에서 띄움 (m)');
+    R(glow, g, 'lift', 0, 0.4, 0.005, '바닥에서 띄움 (m)');
     glow.addColor(g, 'color').name('퍼짐 색상');
     glow.addColor(g, 'coreColor').name('핵심 색상');
     R(glow, g, 'intensity', 0, 6, 0.05, '밝기');
-    R(glow, g, '감쇠', 0.2, 8, 0.05, '퍼짐 감쇠');
+    R(glow, g, 'falloff', 0.2, 8, 0.05, '퍼짐 감쇠');
     R(glow, g, 'core', 0.02, 1, 0.01, '중앙 뜨거운 부분 (비율)');
     R(glow, g, 'corePower', 0.2, 8, 0.05, '핵심 집중도');
     R(glow, g, 'pulse', 0, 1, 0.01, '호흡 깊이');
     R(glow, g, 'pulseSpeed', 0, 12, 0.05, '호흡 속도');
-    R(glow, g, '얼룩', 0, 1, 0.01, '얼룩');
+    R(glow, g, 'mottle', 0, 1, 0.01, '얼룩');
     R(glow, g, 'mottleScale', 0.2, 8, 0.05, '얼룩 크기');
     R(glow, g, 'mottleSpeed', 0, 2, 0.01, '얼룩 흐름');
 
@@ -861,7 +861,7 @@ export class Editor {
     const rings = folder.addFolder('2 - 지면 왜곡');
     const r = s.rings;
     R(rings, r, 'radius', 0.5, 12, 0.05, '도달 (m)');
-    R(rings, r, '띄움', 0, 0.4, 0.005, '바닥에서 띄움 (m)');
+    R(rings, r, 'lift', 0, 0.4, 0.005, '바닥에서 띄움 (m)');
     rings.addColor(r, 'color').name('선단 색상');
     rings.addColor(r, 'coreColor').name('핵심 색상');
     R(rings, r, 'intensity', 0, 6, 0.05, '밝기');
@@ -893,7 +893,7 @@ export class Editor {
     R(column, c, 'shadePower', 0.2, 8, 0.05, '어두운 가장자리 집중도');
     R(column, c, 'corePower', 0.2, 8, 0.05, '핵심 집중도');
     R(column, c, 'rimPower', 0.2, 10, 0.05, '림 집중도');
-    R(column, c, '림', 0, 3, 0.01, '림 강조');
+    R(column, c, 'rim', 0, 3, 0.01, '림 강조');
     R(column, c, 'topFade', 0.02, 0.95, 0.01, '이만큼 흐려짐 (비율)');
     R(column, c, 'streaks', 0, 2, 0.01, '낙하 빛');
     R(column, c, 'streakScale', 0.1, 8, 0.05, '줄무늬 크기');
@@ -918,8 +918,8 @@ export class Editor {
     R(wisps, w, 'count', 0, 24, 1, '개수');
     wisps.addColor(w, 'color').name('연기 색상');
     wisps.addColor(w, 'rimColor').name('프린지 색상');
-    R(wisps, w, '불투명도', 0, 1, 0.01, '불투명도');
-    R(wisps, w, '림', 0, 2, 0.01, '프린지 강도');
+    R(wisps, w, 'opacity', 0, 1, 0.01, '불투명도');
+    R(wisps, w, 'rim', 0, 2, 0.01, '프린지 강도');
     R(wisps, w, 'radius', 0.1, 4, 0.01, '떠나는 반경 (m)');
     R(wisps, w, 'height', 0.5, 12, 0.05, '올라가는 높이 (m)');
     R(wisps, w, 'curl', 0, 3, 0.01, '회전수 (당 올라감)');
@@ -928,7 +928,7 @@ export class Editor {
     R(wisps, w, 'span', 0.05, 1, 0.01, '길이 (상승 대비)');
     R(wisps, w, 'speed', 0, 2, 0.01, '초당 회전');
     R(wisps, w, 'width', 0.01, 1.5, 0.01, '발끝 너비 (m)');
-    R(wisps, w, '퍼짐', 0.2, 4, 0.01, '확장 배율');
+    R(wisps, w, 'spread', 0.2, 4, 0.01, '확장 배율');
     R(wisps, w, 'topScale', 0.2, 3, 0.01, '확장 배율');
     R(wisps, w, 'softness', 0.2, 6, 0.05, '가장자리 감쇠');
     R(wisps, w, 'detail', 0.2, 10, 0.05, '찢김 크기');
@@ -940,19 +940,19 @@ export class Editor {
     const sw = s.swirl;
     swirl.addColor(sw, 'color').name('연기 색상');
     swirl.addColor(sw, 'rimColor').name('프린지 색상');
-    R(swirl, sw, '불투명도', 0, 1, 0.01, '불투명도');
-    R(swirl, sw, '림', 0, 2, 0.01, '프린지 강도');
+    R(swirl, sw, 'opacity', 0, 1, 0.01, '불투명도');
+    R(swirl, sw, 'rim', 0, 2, 0.01, '프린지 강도');
     R(swirl, sw, 'rate', 0, 120, 1, '유지 중 초당');
     R(swirl, sw, 'gatherRate', 0, 60, 1, '모으는 중 초당');
     R(swirl, sw, 'burst', 0, 300, 1, '도착 시');
-    R(swirl, sw, '퍼짐', 0.1, 2, 0.01, 'born within (frac of pool)');
+    R(swirl, sw, 'spread', 0.1, 2, 0.01, 'born within (frac of pool)');
     R(swirl, sw, 'life', 0.2, 8, 0.05, '하나의 수명 (초)');
     R(swirl, sw, 'spin', -8, 8, 0.05, '회전 속도 (rad/s)');
     swirl.add(sw, 'reverse').name('반대 방향으로 회전');
     R(swirl, sw, 'widen', -1, 2, 0.01, '궤도 확장');
     R(swirl, sw, 'rise', -2, 6, 0.05, '상승 속도 (m/s)');
     R(swirl, sw, 'spawnHeight', 0, 4, 0.05, '최대 발생 높이 (m)');
-    R(swirl, sw, '크기', 0.02, 2, 0.01, '크기 (m)');
+    R(swirl, sw, 'size', 0.02, 2, 0.01, '크기 (m)');
     R(swirl, sw, 'grow', 0, 3, 0.01, '성장 배율');
     R(swirl, sw, 'stretch', 1, 8, 0.05, '궤도 따라 늘어남 배율');
     R(swirl, sw, 'wobble', 0, 2, 0.01, '떠돌이 (m)');
@@ -970,7 +970,7 @@ export class Editor {
     R(light, l, 'intensity', 0, 40, 0.1, '유지 중');
     R(light, l, 'flash', 0, 120, 0.5, '도착 시');
     R(light, l, 'height', 0, 1.5, 0.01, '위치 (몸 높이 대비)');
-    R(light, l, '거리', 1, 40, 0.5, '도달 (m)');
+    R(light, l, 'distance', 1, 40, 0.5, '도달 (m)');
     R(light, l, 'decay', 0.5, 4, 0.05, '감쇠');
   }
 
@@ -984,16 +984,16 @@ export class Editor {
     // directly, so the renderer's own flag has nothing to act on. It is also the
     // heaviest thing in the stack, hence a dial rather than a constant.
     folder.add(p, 'samples', [0, 2, 4, 8]).name('안티에일리어싱');
-    R(folder, p, '노출', 0.1, 3, 0.01, '노출');
+    R(folder, p, 'exposure', 0.1, 3, 0.01, '노출');
     R(folder, p, 'bloomStrength', 0, 3, 0.01, '블룸 강도');
     R(folder, p, 'bloomRadius', 0, 1.5, 0.01, '블룸 반경');
     R(folder, p, 'bloomThreshold', 0, 2, 0.01, '블룸 임계값');
-    R(folder, p, '대비', 0.5, 2, 0.01, '대비');
-    R(folder, p, '채도', 0, 2.5, 0.01, '채도');
-    R(folder, p, '색온도', -0.5, 0.5, 0.01, '색온도');
-    R(folder, p, '띄움', -0.2, 0.2, 0.005, '띄움');
-    R(folder, p, '게인', 0.5, 2, 0.01, '게인');
-    R(folder, p, '비네트', 0, 1.5, 0.01, '비네트');
+    R(folder, p, 'contrast', 0.5, 2, 0.01, '대비');
+    R(folder, p, 'saturation', 0, 2.5, 0.01, '채도');
+    R(folder, p, 'temperature', -0.5, 0.5, 0.01, '색온도');
+    R(folder, p, 'lift', -0.2, 0.2, 0.005, '띄움');
+    R(folder, p, 'gain', 0.5, 2, 0.01, '게인');
+    R(folder, p, 'vignette', 0, 1.5, 0.01, '비네트');
     R(folder, p, 'chromaticAberration', 0, 3, 0.01, '색수차');
     R(folder, p, 'grain', 0, 0.2, 0.001, '필름 그레인');
   }
@@ -1004,7 +1004,7 @@ export class Editor {
     const R = Editor.range;
 
     // The wheel writes `distance` straight into settings, so the slider listens.
-    R(folder, c, '거리', 1, 40, 0.1, '거리').listen();
+    R(folder, c, 'distance', 1, 40, 0.1, '거리').listen();
     R(folder, c, 'minDistance', 1, 20, 0.1, '최소 거리');
     R(folder, c, 'maxDistance', 4, 40, 0.1, '최대 거리');
     R(folder, c, 'zoomSpeed', 0.1, 3, 0.01, '줌 속도');
@@ -1033,15 +1033,15 @@ export class Editor {
 
     // The turntable advances `facing` itself, so that slider listens.
     R(folder, c, 'spin', -0.5, 0.5, 0.005, '회전 속도 (rev/s)');
-    R(folder, c, '방향', -Math.PI, Math.PI * 3, 0.01, '방향').listen();
+    R(folder, c, 'facing', -Math.PI, Math.PI * 3, 0.01, '방향').listen();
 
     // The skin's response to the stage's lights. The body wears the glTF
     // palette's authored maps, so these two only reach it once the override is
     // on — off, they still drive any material the palette had no match for.
     const material = folder.addFolder('피부');
     material.add(c, 'overrideSurface').name('원본 PBR 덮어쓰기');
-    R(material, c, '거칠기', 0, 1, 0.01, '거칠기');
-    R(material, c, '금속성', 0, 1, 0.01, '금속성');
+    R(material, c, 'roughness', 0, 1, 0.01, '거칠기');
+    R(material, c, 'metalness', 0, 1, 0.01, '금속성');
 
     // The rig is re-normalised against `targetHeight` every frame, so this
     // rescales the body live — and anything attached to a bone with it.
@@ -1061,8 +1061,8 @@ export class Editor {
     // speeds below, so raising one speeds the legs up to match.
     R(folder, l, 'walkSpeed', 0.2, 4, 0.01, '걷기 (m/s)');
     R(folder, l, 'runSpeed', 1, 12, 0.01, '달리기 (m/s)');
-    R(folder, l, '가속', 1, 60, 0.1, '가속');
-    R(folder, l, '감속', 1, 60, 0.1, '감속');
+    R(folder, l, 'acceleration', 1, 60, 0.1, '가속');
+    R(folder, l, 'deceleration', 1, 60, 0.1, '감속');
     R(folder, l, 'blendRate', 0.000001, 0.05, 0.000001, '블렌드 따라가기');
     // The cross-fade between the two idles — the plain stand and the rifle one.
     // Faster than the gait blend: it is answering a weapon appearing in the
@@ -1088,7 +1088,7 @@ export class Editor {
     const jump = folder.addFolder('멀리 점프');
     const j = settings.jump;
     jump.add(j, 'enabled').name('멀리 점프 켜기');
-    R(jump, j, '거리', 0, 20, 0.1, '거리 (m)');
+    R(jump, j, 'distance', 0, 20, 0.1, '거리 (m)');
     R(jump, j, 'minRunFraction', 0, 1, 0.01, '달리기 배율 이상에서 발진');
     R(jump, j, 'landAt', 0.4, 1, 0.01, '조작 복귀 시점');
     R(jump, j, 'blendIn', 0.01, 0.6, 0.01, '블렌드 인 (초)');
@@ -1177,7 +1177,7 @@ export class Editor {
     // its own aim and there is nowhere honest to put a reticle.
     R(lens, c, 'offset', 0, 1.6, 0.01, '축에서 거리 (m)');
     R(lens, c, 'rise', -0.4, 0.4, 0.01, '상승 (m)');
-    R(lens, c, '거리', 0.8, 6, 0.05, '거리 (m)');
+    R(lens, c, 'distance', 0.8, 6, 0.05, '거리 (m)');
     R(lens, c, 'targetHeight', 0.6, 2.4, 0.01, '주시 높이 (m)');
     R(lens, c, 'fov', 25, 80, 0.5, '시야각');
     R(lens, c, 'blend', 0.00001, 0.02, 0.00001, '올라오는 시간');
@@ -1207,7 +1207,7 @@ export class Editor {
     gun.add(f, 'auto').name('연사 모드');
     R(gun, f, 'speed', 30, 400, 5, '탄속 (m/s)');
     R(gun, f, 'drop', 0, 20, 0.1, '탄도 낙하 (m/s²)');
-    R(gun, f, '퍼짐', 0, 6, 0.01, '정지 상태 퍼짐 (도)');
+    R(gun, f, 'spread', 0, 6, 0.01, '정지 상태 퍼짐 (도)');
     R(gun, f, 'moveSpread', 0, 10, 0.01, '이동 중 퍼짐 (도)');
     R(gun, f, 'adsSpread', 0, 3, 0.01, '조준 시 퍼짐 (도)');
     R(gun, f, 'bloom', 0, 2, 0.01, '발당 누적 (도)');
@@ -1223,10 +1223,10 @@ export class Editor {
     // Three of these into a hundred is the whole design: change `body` and the
     // rifle changes from a three-round weapon to something else.
     R(hurt, d, 'health', 10, 400, 5, '몸 체력');
-    R(hurt, d, '몸체', 1, 200, 1, '몸 명중');
+    R(hurt, d, 'body', 1, 200, 1, '몸 명중');
     R(hurt, d, 'head', 1, 400, 1, '머리 명중');
     R(hurt, d, 'impulse', 0, 12, 0.1, '밀침 (m/s)');
-    R(hurt, d, '띄움', 0, 8, 0.1, '띄움 (m/s)');
+    R(hurt, d, 'lift', 0, 8, 0.1, '띄움 (m/s)');
     R(hurt, d, 'spin', 0, 5, 0.05, '접힘');
     R(hurt, d, 'headImpulse', 0, 12, 0.1, '머리 밀침 (m/s)');
     R(hurt, d, 'headLift', 0, 8, 0.1, '머리 띄움 (m/s)');
@@ -1252,7 +1252,7 @@ export class Editor {
     bars.addColor(b, 'frameColor').name('테두리');
     R(bars, b, 'width', 0.1, 1.5, 0.01, '너비 (m)');
     R(bars, b, 'height', 0.01, 0.3, 0.005, '높이 (m)');
-    R(bars, b, '띄움', 0, 1.2, 0.01, '머리 위 거리 (m)');
+    R(bars, b, 'lift', 0, 1.2, 0.01, '머리 위 거리 (m)');
     // What keeps a bar readable once the body is a speck.
     R(bars, b, 'minWidth', 0, 120, 1, '최소 너비 (px)');
     R(bars, b, 'range', 5, 200, 5, '표시 거리 (m)');
@@ -1272,7 +1272,7 @@ export class Editor {
     const look = folder.addFolder('외형');
     const t = g.tracer;
     look.addColor(t, 'color').name('예광탄 색상');
-    R(look, t, '밝기', 0.2, 20, 0.1, '예광탄 발광');
+    R(look, t, 'brightness', 0.2, 20, 0.1, '예광탄 발광');
     R(look, t, 'length', 0.2, 12, 0.1, '예광탄 길이 (m)');
     R(look, t, 'width', 0.005, 0.2, 0.005, '예광탄 너비 (m)');
     R(look, t, 'life', 0.2, 6, 0.1, '탄환 수명 (초)');
@@ -1280,9 +1280,9 @@ export class Editor {
     const flash = look.addFolder('총구 화염');
     const m = g.muzzle;
     flash.addColor(m, 'color').name('색상');
-    R(flash, m, '크기', 0.05, 1.2, 0.01, '크기 (m)');
+    R(flash, m, 'size', 0.05, 1.2, 0.01, '크기 (m)');
     R(flash, m, 'life', 0.01, 0.3, 0.005, '지속 (초)');
-    R(flash, m, '빛', 0, 40, 0.5, '빛');
+    R(flash, m, 'light', 0, 40, 0.5, '빛');
     R(flash, m, 'lightRange', 1, 30, 0.5, '빛 도달 (m)');
     // The three that fix a barrel this project guessed the end of.
     R(flash, m, 'forward', -0.6, 0.6, 0.005, '총신 방향 (m)');
@@ -1292,11 +1292,11 @@ export class Editor {
     const sparks = look.addFolder('격발');
     const i = g.impact;
     sparks.addColor(i, 'color').name('불꽃 색상');
-    R(sparks, i, '밝기', 0.2, 10, 0.1, '불꽃 발광');
-    R(sparks, i, '불꽃 수', 0, 60, 1, '탄당 불꽃 수');
+    R(sparks, i, 'brightness', 0.2, 10, 0.1, '불꽃 발광');
+    R(sparks, i, 'sparks', 0, 60, 1, '탄당 불꽃 수');
     R(sparks, i, 'speed', 0.5, 20, 0.1, '튐 속도 (m/s)');
     R(sparks, i, 'life', 0.05, 2, 0.01, '지속 (초)');
-    R(sparks, i, '크기', 0.01, 0.3, 0.005, '크기 (m)');
+    R(sparks, i, 'size', 0.01, 0.3, 0.005, '크기 (m)');
     R(sparks, i, 'gravity', -40, 0, 0.5, '낙하 (m/s²)');
 
     this._buildFocus(folder);
@@ -1335,7 +1335,7 @@ export class Editor {
     R(cost, f, 'blastRadius', 0, 12, 0.1, '폭발 반경 (m)');
     R(cost, f, 'blastDamage', 0, 400, 5, '중심부 폭발 피해');
     R(cost, f, 'impulse', 0, 20, 0.1, '밀침 (m/s)');
-    R(cost, f, '띄움', 0, 12, 0.1, '띄움 (m/s)');
+    R(cost, f, 'lift', 0, 12, 0.1, '띄움 (m/s)');
     R(cost, f, 'spin', 0, 8, 0.05, '접힘');
 
     const feel = folder.addFolder('감각');
@@ -1354,7 +1354,7 @@ export class Editor {
     R(burst, b, 'radius', 0.5, 8, 0.05, '최대 반경 (m)');
     R(burst, b, 'life', 0.2, 4, 0.05, '지속 (초)');
     R(burst, b, 'intensity', 0.1, 4, 0.05, '밝기');
-    R(burst, b, '빛', 0, 300, 1, '빛');
+    R(burst, b, 'light', 0, 300, 1, '빛');
     R(burst, b, 'lightRange', 2, 80, 0.5, '빛 도달 (m)');
     burst.addColor(b, 'lightColor').name('빛 색상');
 
@@ -1362,8 +1362,8 @@ export class Editor {
     shell.add(b, 'shellEnabled').name('표시');
     shell.addColor(b, 'shellColor').name('색상');
     shell.addColor(b, 'shellCoreColor').name('선 색상');
-    R(shell, b, '자오선', 1, 16, 1, '자오선');
-    R(shell, b, '위선', 1, 12, 1, '위선');
+    R(shell, b, 'meridians', 1, 16, 1, '자오선');
+    R(shell, b, 'parallels', 1, 12, 1, '위선');
     // A fraction of the gap between two lines, so it means the same thing at
     // any count.
     R(shell, b, 'arcWidth', 0.005, 0.4, 0.005, '호 너비');
@@ -1406,7 +1406,7 @@ export class Editor {
     const shower = burst.addFolder('5. 불꽃');
     shower.add(b, 'sparksEnabled').name('표시');
     shower.addColor(b, 'sparkColor').name('색상');
-    R(shower, b, '불꽃 수', 0, 200, 1, '불꽃 수');
+    R(shower, b, 'sparks', 0, 200, 1, '불꽃 수');
     R(shower, b, 'sparkSpeed', 0.5, 40, 0.5, '튐 속도 (m/s)');
     R(shower, b, 'sparkSize', 0.005, 0.4, 0.005, '크기 (m)');
     R(shower, b, 'sparkLife', 0.05, 3, 0.05, '지속 (초)');
@@ -1418,7 +1418,7 @@ export class Editor {
     shards.add(b, 'shardsEnabled').name('표시');
     shards.addColor(b, 'shardColor').name('색상');
     shards.addColor(b, 'shardColorAlt').name('두 번째 색상');
-    R(shards, b, '파편 수', 0, 160, 1, '파편 수');
+    R(shards, b, 'shards', 0, 160, 1, '파편 수');
     R(shards, b, 'shardSpeed', 0.5, 40, 0.5, '튐 속도 (m/s)');
     R(shards, b, 'shardSize', 0.01, 0.8, 0.005, '길이 (m)');
     R(shards, b, 'shardLife', 0.05, 3, 0.05, '지속 (초)');
@@ -1482,8 +1482,8 @@ export class Editor {
     const look = enemies.addFolder('외형');
     const el = e.look;
     look.addColor(el, 'color').name('몸 색상');
-    R(look, el, '거칠기', 0, 1, 0.01, '거칠기');
-    R(look, el, '금속성', 0, 1, 0.01, '금속성');
+    R(look, el, 'roughness', 0, 1, 0.01, '거칠기');
+    R(look, el, 'metalness', 0, 1, 0.01, '금속성');
     look.addColor(el, 'rimColor').name('림 색상');
     R(look, el, 'rimPower', 0.2, 8, 0.05, '림 집중도');
     R(look, el, 'rimEmissive', 0, 8, 0.01, '림 발광');
@@ -1501,11 +1501,11 @@ export class Editor {
     R(doll, r, 'gravity', -60, -1, 0.5, '중력 (m/s²)');
     R(doll, r, 'damping', 0, 0.9, 0.01, '공기 저항 /s');
     R(doll, r, 'iterations', 1, 20, 1, '솔버 반복');
-    R(doll, r, '서브스텝', 1, 6, 1, '서브스텝');
+    R(doll, r, 'substeps', 1, 6, 1, '서브스텝');
     R(doll, r, 'brace', 0, 1, 0.01, '상체 강성');
     R(doll, r, 'radius', 0.01, 0.4, 0.005, '관절 반경 (m)');
     R(doll, r, 'friction', 0, 1, 0.01, '지면 마찰');
-    R(doll, r, '반발', 0, 0.8, 0.01, '반발');
+    R(doll, r, 'bounce', 0, 0.8, 0.01, '반발');
     R(doll, r, 'sleep', 0, 0.5, 0.005, '수면 임계값');
   }
 
@@ -1567,7 +1567,7 @@ export class Editor {
     // the feet, which is the whole difference between sliding and folding.
     const impact = folder.addFolder('격발');
     R(impact, config, 'impulse', 0, 25, 0.1, '힘 (m/s)');
-    R(impact, config, '띄움', 0, 15, 0.1, '띄움 (m/s)');
+    R(impact, config, 'lift', 0, 15, 0.1, '띄움 (m/s)');
     R(impact, config, 'spin', 0, 4, 0.05, '상체 배율');
     R(impact, config, 'hitStop', 0, 0.3, 0.005, '히트 정지 (초)');
     R(impact, config, 'hitStopScale', 0, 1, 0.01, '히트 정지 배율');
@@ -1759,8 +1759,8 @@ export class Editor {
     R(dash, d, 'detail', 1, 40, 0.5, '소멸 디테일 (/m)');
     R(dash, d, 'rise', 0, 1, 0.01, '소멸 상승');
     R(dash, d, 'drift', 0, 4, 0.05, '필드 흐름 (/s)');
-    R(dash, d, '거칠기', 0, 1, 0.01, '거칠기');
-    R(dash, d, '금속성', 0, 1, 0.01, '금속성');
+    R(dash, d, 'roughness', 0, 1, 0.01, '거칠기');
+    R(dash, d, 'metalness', 0, 1, 0.01, '금속성');
     R(dash, d.fresnel, 'power', 0.2, 8, 0.05, '림 집중도');
     R(dash, d.fresnel, 'emissive', 0, 8, 0.01, '림 발광');
     // How much of the stage comes through the shade. `see-through curve` is the
@@ -1979,7 +1979,7 @@ export class Editor {
     R(trails, t, 'razor', 0, 1, 0.01, 'razor sits at');
     R(trails, t, 'razorWidth', 0.01, 0.5, 0.005, 'razor width');
     R(trails, t, 'core', 0, 5, 0.05, 'razor heat');
-    R(trails, t, '감쇠', 0.2, 6, 0.05, 'body falloff');
+    R(trails, t, 'falloff', 0.2, 6, 0.05, 'body falloff');
     R(trails, t, 'tip', 0.05, 2, 0.01, '끝 날카로움');
     R(trails, t, 'draw', 0.01, 0.9, 0.01, 'swept over (of life)');
     R(trails, t, 'headSoft', 0.01, 0.4, 0.005, 'head feather');
@@ -2000,7 +2000,7 @@ export class Editor {
       const arc = folder.addFolder(title);
       const a = c[key];
       R(arc, a, 'count', 0, 8, 1, 'strokes');
-      R(arc, a, '퍼짐', 0, 2, 0.01, 'fan opens by (rad)');
+      R(arc, a, 'spread', 0, 2, 0.01, 'fan opens by (rad)');
       R(arc, a, 'radius', 0.2, 6, 0.05, '호 반경 (m)');
       R(arc, a, 'sweep', 0.1, 5, 0.05, 'arc spans (rad)');
       R(arc, a, 'width', 0.02, 1.5, 0.01, 'width (of radius)');
@@ -2017,15 +2017,15 @@ export class Editor {
     mist.addColor(m, 'color').name('몸 색상');
     mist.addColor(m, 'hotColor').name('뜨거운 색상');
     R(mist, m, 'intensity', 0, 3, 0.01, 'master ×');
-    R(mist, m, '공기 저항', 0.05, 10, 0.05, '공기 저항');
+    R(mist, m, 'drag', 0.05, 10, 0.05, '공기 저항');
     R(mist, m, 'gravity', -30, 0, 0.1, '낙하 (m/s²)');
-    R(mist, m, '입자 수', 0, 90, 1, 'cloud puffs');
+    R(mist, m, 'haze', 0, 90, 1, 'cloud puffs');
     R(mist, m, 'puffSpeed', 0, 10, 0.05, 'puffs thrown at (m/s)');
     R(mist, m, 'puffRise', -2, 4, 0.05, 'puffs lift (m/s)');
     R(mist, m, 'puffLife', 0.1, 4, 0.05, 'puffs last (s)');
-    R(mist, m, '크기', 0.05, 2, 0.01, 'puff size (m)');
+    R(mist, m, 'size', 0.05, 2, 0.01, 'puff size (m)');
     R(mist, m, 'grow', 0, 8, 0.05, 'puff grows by ×');
-    R(mist, m, '불투명도', 0, 1, 0.01, 'cloud opacity');
+    R(mist, m, 'opacity', 0, 1, 0.01, 'cloud opacity');
     R(mist, m, 'setback', 0, 1.5, 0.01, 'cloud sits back (m)');
     R(mist, m, 'erode', 0, 1.5, 0.01, 'cloud raggedness');
     R(mist, m, 'detail', 0.2, 10, 0.1, 'cloud detail');
@@ -2054,14 +2054,14 @@ export class Editor {
     R(rings, g, 'ringReach', 0.4, 1, 0.01, 'each reaches ×');
     R(rings, g, 'width', 0.005, 0.2, 0.001, '선단 너비');
     R(rings, g, 'softness', 0.005, 0.2, 0.001, '선단 페더');
-    R(rings, g, '균열 수', 0, 40, 1, '균열 수');
+    R(rings, g, 'cracks', 0, 40, 1, '균열 수');
     R(rings, g, 'crackLength', 0.1, 1, 0.01, 'crack length');
     R(rings, g, 'crackWidth', 0.002, 0.08, 0.001, '균열 너비');
     R(rings, g, 'crackGlow', 0, 5, 0.05, 'crack heat');
     R(rings, g, 'scorch', 0, 1, 0.01, 'burn depth');
     R(rings, g, 'scorchRadius', 0.05, 1, 0.01, 'burn reaches');
     R(rings, g, 'scorchFade', 0.05, 1, 0.01, 'burn fades over');
-    R(rings, g, '띄움', 0, 0.2, 0.005, '바닥에서 띄움 (m)');
+    R(rings, g, 'lift', 0, 0.2, 0.005, '바닥에서 띄움 (m)');
 
     /* ---- 4 · the ink ---- */
     const aura = folder.addFolder('4. 어두운 후광');
@@ -2069,8 +2069,8 @@ export class Editor {
     aura.add(a, 'enabled').name('표시');
     aura.addColor(a, 'inkColor').name('잉크 색상');
     aura.addColor(a, 'rimColor').name('림 색상');
-    R(aura, a, '불투명도', 0, 1, 0.01, '불투명도');
-    R(aura, a, '림', 0, 2, 0.01, 'rim heat');
+    R(aura, a, 'opacity', 0, 1, 0.01, '불투명도');
+    R(aura, a, 'rim', 0, 2, 0.01, 'rim heat');
     R(aura, a, 'radius', 0.2, 5, 0.05, 'stands out at (m)');
     R(aura, a, 'height', 0.5, 8, 0.05, '최대 높이 (m)');
     R(aura, a, 'scale', 0.2, 5, 0.05, 'feature size');
@@ -2091,18 +2091,18 @@ export class Editor {
     R(cinders, e, 'intensity', 0, 8, 0.05, '밝기');
     R(cinders, e, 'speed', 0, 30, 0.1, '튐 속도 (m/s)');
     R(cinders, e, 'life', 0.1, 4, 0.05, '지속 (초)');
-    R(cinders, e, '공기 저항', 0.05, 8, 0.05, '공기 저항');
+    R(cinders, e, 'drag', 0.05, 8, 0.05, '공기 저항');
     R(cinders, e, 'gravity', -20, 4, 0.1, '낙하 (m/s²)');
     R(cinders, e, 'rise', -2, 5, 0.05, '띄움 (m/s)');
-    R(cinders, e, '크기', 0.005, 0.15, 0.001, '크기 (m)');
+    R(cinders, e, 'size', 0.005, 0.15, 0.001, '크기 (m)');
     R(cinders, e, 'stretch', 0, 8, 0.05, 'stretched by speed');
     R(cinders, e, 'maxStretch', 1, 24, 0.5, 'longest streak ×');
-    R(cinders, e, '광배', 0, 2, 0.01, '광배');
+    R(cinders, e, 'halo', 0, 2, 0.01, '광배');
     R(cinders, e, 'flicker', 0, 1, 0.01, 'flicker depth');
     R(cinders, e, 'flickerSpeed', 1, 60, 0.5, 'flicker speed');
     R(cinders, e, 'stabCount', 0, 120, 1, 'shed per thrust');
     R(cinders, e, 'stabStrength', 0, 3, 0.05, 'thrust ×');
-    R(cinders, e, '퍼짐', 0, 2, 0.01, 'shed cone (rad)');
+    R(cinders, e, 'spread', 0, 2, 0.01, 'shed cone (rad)');
     R(cinders, e, 'rendCount', 0, 300, 1, 'thrown by the tear-out');
     R(cinders, e, 'rendStrength', 0, 3, 0.05, 'tear-out ×');
     R(cinders, e, 'rendRadius', 0, 3, 0.05, 'tear-out spread (m)');
@@ -2146,7 +2146,7 @@ export class Editor {
     steel.addColor(b, 'bodyColor').name('몸체');
     steel.addColor(b, 'sheenColor').name('광택');
     steel.addColor(b, 'rimColor').name('림');
-    R(steel, b, '림', 0, 5, 0.05, '림 강도');
+    R(steel, b, 'rim', 0, 5, 0.05, '림 강도');
     R(steel, b, 'rimPower', 0.2, 8, 0.05, '림 집중도');
     steel.addColor(b, 'edgeColor').name('소멸 선');
     R(steel, b, 'edgeEmissive', 0, 24, 0.1, 'burn line heat');
@@ -2226,13 +2226,13 @@ export class Editor {
     glow.addColor(w, 'coreColor').name('핵심 색상');
     R(glow, w, 'intensity', 0, 8, 0.05, '밝기');
     R(glow, w, 'radius', 0.5, 8, 0.1, '도달 (m)');
-    R(glow, w, '감쇠', 0.2, 6, 0.05, '퍼짐 감쇠');
+    R(glow, w, 'falloff', 0.2, 6, 0.05, '퍼짐 감쇠');
     R(glow, w, 'core', 0, 1, 0.01, 'core takes');
     R(glow, w, 'corePower', 0.5, 8, 0.05, '핵심 집중도');
     R(glow, w, 'pulse', 0, 1, 0.01, 'pulse depth');
     R(glow, w, 'pulseSpeed', 0, 8, 0.05, 'pulse rate');
-    R(glow, w, '얼룩', 0, 1, 0.01, '얼룩');
-    R(glow, w, '띄움', 0, 0.2, 0.005, '바닥에서 띄움 (m)');
+    R(glow, w, 'mottle', 0, 1, 0.01, '얼룩');
+    R(glow, w, 'lift', 0, 0.2, 0.005, '바닥에서 띄움 (m)');
 
     /* ---- 2 · the shockwave ---- */
     const rings = folder.addFolder('2. 격발 충격파');
@@ -2247,11 +2247,11 @@ export class Editor {
     R(rings, g, 'life', 0.2, 5, 0.05, '지속 (초)');
     R(rings, g, 'rings', 1, 6, 1, 'fronts in the train');
     R(rings, g, 'ringGap', 0.02, 0.4, 0.005, 'launched apart by (of life)');
-    R(rings, g, '균열 수', 0, 40, 1, '균열 수');
+    R(rings, g, 'cracks', 0, 40, 1, '균열 수');
     R(rings, g, 'crackLength', 0.1, 1, 0.01, 'crack length');
     R(rings, g, 'crackGlow', 0, 5, 0.05, 'crack heat');
     R(rings, g, 'scorch', 0, 1, 0.01, 'burn depth');
-    R(rings, g, '띄움', 0, 0.2, 0.005, '바닥에서 띄움 (m)');
+    R(rings, g, 'lift', 0, 0.2, 0.005, '바닥에서 띄움 (m)');
 
     /* ---- 3 · the column ---- */
     const column = folder.addFolder('3. 어두운 기둥');
@@ -2264,7 +2264,7 @@ export class Editor {
     R(column, p, 'height', 1, 24, 0.1, 'stands (m)');
     R(column, p, 'shade', 0, 1, 0.01, 'edge darkening');
     R(column, p, 'corePower', 0.5, 12, 0.1, '핵심 집중도');
-    R(column, p, '림', 0, 4, 0.01, '림');
+    R(column, p, 'rim', 0, 4, 0.01, '림');
     R(column, p, 'streaks', 0, 2, 0.01, 'striations');
     R(column, p, 'veins', 0, 6, 0.05, '번개');
     R(column, p, 'veinRate', 0, 24, 0.1, 'lightning rate');
@@ -2279,8 +2279,8 @@ export class Editor {
     wisps.addColor(k, 'color').name('연기 색상');
     wisps.addColor(k, 'rimColor').name('프린지 색상');
     R(wisps, k, 'count', 0, 48, 1, 'wisps');
-    R(wisps, k, '불투명도', 0, 1, 0.01, '불투명도');
-    R(wisps, k, '림', 0, 4, 0.01, 'fringe');
+    R(wisps, k, 'opacity', 0, 1, 0.01, '불투명도');
+    R(wisps, k, 'rim', 0, 4, 0.01, 'fringe');
     R(wisps, k, 'radius', 0.2, 6, 0.05, 'stand out (m)');
     R(wisps, k, 'height', 1, 14, 0.1, 'climb (m)');
     R(wisps, k, 'curl', 0, 3, 0.01, 'curl');
@@ -2295,17 +2295,17 @@ export class Editor {
     const v = c.swirl;
     swirl.addColor(v, 'color').name('몸 색상');
     swirl.addColor(v, 'rimColor').name('프린지 색상');
-    R(swirl, v, '불투명도', 0, 1, 0.01, '불투명도');
-    R(swirl, v, '림', 0, 4, 0.01, 'fringe');
+    R(swirl, v, 'opacity', 0, 1, 0.01, '불투명도');
+    R(swirl, v, 'rim', 0, 4, 0.01, 'fringe');
     R(swirl, v, 'rate', 0, 160, 1, 'puffs a second');
     R(swirl, v, 'gatherRate', 0, 80, 1, 'while gathering (a second)');
     R(swirl, v, 'impaleBurst', 0, 300, 1, 'thrown by the impact');
     R(swirl, v, 'severBurst', 0, 300, 1, 'thrown by the tear-out');
-    R(swirl, v, '퍼짐', 0.1, 2, 0.01, 'born out at (of radius)');
+    R(swirl, v, 'spread', 0.1, 2, 0.01, 'born out at (of radius)');
     R(swirl, v, 'life', 0.2, 6, 0.05, '지속 (초)');
     R(swirl, v, 'spin', 0, 8, 0.05, '회전 속도 (rad/s)');
     R(swirl, v, 'rise', 0, 10, 0.05, 'lifts (m/s)');
-    R(swirl, v, '크기', 0.05, 2, 0.01, '크기 (m)');
+    R(swirl, v, 'size', 0.05, 2, 0.01, '크기 (m)');
     R(swirl, v, 'stretch', 1, 6, 0.05, 'drawn along its orbit ×');
     R(swirl, v, 'erode', 0, 1.5, 0.01, 'raggedness');
 
@@ -2316,20 +2316,20 @@ export class Editor {
     shards.addColor(d, 'color').name('면 색상');
     shards.addColor(d, 'rimColor').name('가장자리 색상');
     shards.addColor(d, 'coreColor').name('파단 색상');
-    R(shards, d, '불투명도', 0, 1, 0.01, '불투명도');
-    R(shards, d, '림', 0, 3, 0.01, 'edge fringe');
+    R(shards, d, 'opacity', 0, 1, 0.01, '불투명도');
+    R(shards, d, 'rim', 0, 3, 0.01, 'edge fringe');
     R(shards, d, 'rimWidth', 0.01, 0.6, 0.005, '가장자리 너비');
     R(shards, d, 'heat', 0, 8, 0.05, 'fracture heat');
     R(shards, d, 'jagged', 0, 1.2, 0.01, 'corners wander by (rad)');
-    R(shards, d, '크기', 0.02, 0.8, 0.005, '크기 (m)');
+    R(shards, d, 'size', 0.02, 0.8, 0.005, '크기 (m)');
     R(shards, d, 'grow', 0, 3, 0.05, 'opens out by ×');
     R(shards, d, 'spin', 0, 12, 0.1, 'tumbles at (rad/s)');
     R(shards, d, 'speed', 0, 24, 0.1, '튐 속도 (m/s)');
     R(shards, d, 'life', 0.1, 4, 0.05, '지속 (초)');
-    R(shards, d, '공기 저항', 0.05, 10, 0.05, '공기 저항');
+    R(shards, d, 'drag', 0.05, 10, 0.05, '공기 저항');
     R(shards, d, 'gravity', -30, 0, 0.1, '낙하 (m/s²)');
     R(shards, d, 'rise', 0, 8, 0.05, '띄움 (m/s)');
-    R(shards, d, '퍼짐', 0, 1.6, 0.01, 'thrust cone (rad)');
+    R(shards, d, 'spread', 0, 1.6, 0.01, 'thrust cone (rad)');
     R(shards, d, 'stabCount', 0, 80, 1, 'off one thrust');
     R(shards, d, 'impaleCount', 0, 200, 1, 'off the impact');
     R(shards, d, 'impaleStrength', 0, 3, 0.05, 'impact force ×');
@@ -2346,12 +2346,12 @@ export class Editor {
     R(cinders, n, 'intensity', 0, 6, 0.05, '밝기');
     R(cinders, n, 'speed', 0, 24, 0.1, '튐 속도 (m/s)');
     R(cinders, n, 'life', 0.1, 4, 0.05, '지속 (초)');
-    R(cinders, n, '공기 저항', 0.05, 10, 0.05, '공기 저항');
+    R(cinders, n, 'drag', 0.05, 10, 0.05, '공기 저항');
     R(cinders, n, 'gravity', -30, 0, 0.1, '낙하 (m/s²)');
     R(cinders, n, 'rise', 0, 8, 0.05, '띄움 (m/s)');
-    R(cinders, n, '크기', 0.002, 0.1, 0.001, '크기 (m)');
+    R(cinders, n, 'size', 0.002, 0.1, 0.001, '크기 (m)');
     R(cinders, n, 'stretch', 0, 8, 0.05, 'stretch by speed');
-    R(cinders, n, '광배', 0, 2, 0.01, '광배');
+    R(cinders, n, 'halo', 0, 2, 0.01, '광배');
     R(cinders, n, 'stabCount', 0, 80, 1, 'off one thrust');
     R(cinders, n, 'severCount', 0, 250, 1, 'off the tear-out');
     R(cinders, n, 'drift', 0, 120, 1, 'drift (a second)');
@@ -2368,7 +2368,7 @@ export class Editor {
     R(trails, t, 'razor', 0, 1, 0.01, 'razor sits at');
     R(trails, t, 'razorWidth', 0.01, 0.5, 0.005, 'razor width');
     R(trails, t, 'core', 0, 5, 0.05, 'razor heat');
-    R(trails, t, '감쇠', 0.2, 6, 0.05, 'body falloff');
+    R(trails, t, 'falloff', 0.2, 6, 0.05, 'body falloff');
     R(trails, t, 'tip', 0.05, 2, 0.01, '끝 날카로움');
     R(trails, t, 'draw', 0.01, 0.9, 0.01, 'swept over (of life)');
     R(trails, t, 'headFlare', 0, 6, 0.05, 'head heat');
@@ -2387,7 +2387,7 @@ export class Editor {
       const arc = folder.addFolder(title);
       const a = c[key];
       R(arc, a, 'count', 0, 8, 1, 'strokes');
-      R(arc, a, '퍼짐', 0, 2, 0.01, 'fan opens by (rad)');
+      R(arc, a, 'spread', 0, 2, 0.01, 'fan opens by (rad)');
       R(arc, a, 'radius', 0.2, 6, 0.05, '호 반경 (m)');
       R(arc, a, 'sweep', 0.1, 5, 0.05, 'arc spans (rad)');
       R(arc, a, 'width', 0.02, 1.5, 0.01, 'width (of radius)');
@@ -2426,7 +2426,7 @@ export class Editor {
     blades.addColor(b, 'bodyColor').name('강철 색상');
     blades.addColor(b, 'sheenColor').name('광택 색상');
     blades.addColor(b, 'rimColor').name('림 색상');
-    R(blades, b, '림', 0, 6, 0.05, '림');
+    R(blades, b, 'rim', 0, 6, 0.05, '림');
     blades.addColor(b, 'edgeColor').name('소멸 선');
     R(blades, b, 'edgeEmissive', 0, 24, 0.1, 'burn line heat');
     R(blades, b, 'edgeWidth', 0.005, 0.6, 0.005, 'burn line width');
@@ -2472,12 +2472,12 @@ export class Editor {
     folder.add(t, 'enabled').name('켜기');
     folder.addColor(t, 'color').name('색상');
     R(folder, t, 'radius', 0.2, 3, 0.01, '반경 (m)');
-    R(folder, t, '감쇠', 0.2, 12, 0.1, '가장자리 감쇠');
+    R(folder, t, 'falloff', 0.2, 12, 0.1, '가장자리 감쇠');
     R(folder, t, 'softness', 0.01, 0.6, 0.01, 'outer feather');
     R(folder, t, 'intensity', 0, 6, 0.05, '밝기');
     R(folder, t, 'pulse', 0, 1, 0.01, '호흡 깊이');
     R(folder, t, 'pulseSpeed', 0, 12, 0.1, '호흡 속도');
-    R(folder, t, '띄움', 0, 0.2, 0.005, '바닥에서 띄움 (m)');
+    R(folder, t, 'lift', 0, 0.2, 0.005, '바닥에서 띄움 (m)');
     R(folder, t, 'fadeIn', 0.01, 1, 0.01, 'fade in (s)');
     R(folder, t, 'fadeOut', 0.01, 1, 0.01, 'fade out (s)');
   }
@@ -2523,7 +2523,7 @@ export class Editor {
     const c = s.collide;
     hit.add(c, 'enabled').name('두 토막 충돌');
     R(hit, c, 'radius', 0, 0.3, 0.005, 'joint size (m)');
-    R(hit, c, '반발', 0, 1, 0.01, '반발');
+    R(hit, c, 'bounce', 0, 1, 0.01, '반발');
     R(hit, c, 'friction', 0, 1, 0.01, 'grip');
     R(hit, c, 'maxPush', 0.005, 0.3, 0.005, 'push cap /frame (m)');
 
@@ -2540,19 +2540,19 @@ export class Editor {
     const b = s.blood;
     blood.add(b, 'enabled').name('피 켜기');
     blood.addColor(b, 'color').name('피 색상');
-    R(blood, b, '밝기', 0, 4, 0.05, '밝기');
+    R(blood, b, 'brightness', 0, 4, 0.05, '밝기');
     R(blood, b, 'burst', 0, 600, 5, 'droplets on the cut');
     R(blood, b, 'speed', 0, 15, 0.1, '튐 속도 (m/s)');
-    R(blood, b, '퍼짐', 0, 2, 0.01, 'spray spread');
+    R(blood, b, 'spread', 0, 2, 0.01, 'spray spread');
     R(blood, b, 'drip', 0, 300, 1, 'stump drip (/s)');
     R(blood, b, 'dripSpeed', 0, 6, 0.05, 'drip speed (m/s)');
     R(blood, b, 'bleedTime', 0, 8, 0.1, 'bleeds for (s)');
-    R(blood, b, '크기', 0.002, 0.15, 0.002, 'droplet size (m)');
+    R(blood, b, 'size', 0.002, 0.15, 0.002, 'droplet size (m)');
     R(blood, b, 'sizeVariance', 0, 1, 0.01, 'size variance');
     R(blood, b, 'life', 0.1, 5, 0.05, 'droplet life (s)');
     R(blood, b, 'lifeVariance', 0, 0.95, 0.01, 'life variance');
     R(blood, b, 'gravity', -60, 0, 0.5, '중력 (m/s²)');
-    R(blood, b, '공기 저항', 0.02, 4, 0.01, '공기 저항 /s');
+    R(blood, b, 'drag', 0.02, 4, 0.01, '공기 저항 /s');
     R(blood, b, 'stretch', 0, 0.4, 0.005, 'motion streak');
     R(blood, b, 'maxStretch', 1, 20, 0.5, 'streak ceiling');
     R(blood, b, 'fade', 0.02, 1, 0.01, 'fades over (× life)');
@@ -2571,7 +2571,7 @@ export class Editor {
     const s = settings.studio;
     const R = Editor.range;
 
-    R(folder, s, '회전 속도', -0.3, 0.3, 0.005, '회전 속도 (rev/s)').listen();
+    R(folder, s, 'turntable', -0.3, 0.3, 0.005, '회전 속도 (rev/s)').listen();
 
     const camera = folder.addFolder('카메라');
     R(camera, s.camera, 'fov', 15, 80, 0.5, '시야각');
@@ -2643,14 +2643,14 @@ export class Editor {
     const post = folder.addFolder('색보정');
     const p = s.post;
     post.add(p, 'enabled').name('켜기');
-    R(post, p, '노출', 0.1, 3, 0.01, '노출');
+    R(post, p, 'exposure', 0.1, 3, 0.01, '노출');
     R(post, p, 'bloomStrength', 0, 3, 0.01, '블룸 강도');
     R(post, p, 'bloomRadius', 0, 1.5, 0.01, '블룸 반경');
     R(post, p, 'bloomThreshold', 0, 2, 0.01, '블룸 임계값');
-    R(post, p, '대비', 0.5, 2, 0.01, '대비');
-    R(post, p, '채도', 0, 2.5, 0.01, '채도');
-    R(post, p, '색온도', -0.5, 0.5, 0.01, '색온도');
-    R(post, p, '비네트', 0, 1.5, 0.01, '비네트');
+    R(post, p, 'contrast', 0.5, 2, 0.01, '대비');
+    R(post, p, 'saturation', 0, 2.5, 0.01, '채도');
+    R(post, p, 'temperature', -0.5, 0.5, 0.01, '색온도');
+    R(post, p, 'vignette', 0, 1.5, 0.01, '비네트');
     R(post, p, 'chromaticAberration', 0, 3, 0.01, '색수차');
     R(post, p, 'grain', 0, 0.2, 0.001, '필름 그레인');
   }
