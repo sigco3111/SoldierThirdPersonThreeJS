@@ -342,20 +342,20 @@ export class Editor {
     // also the glare's and what the haze's lobe is sized against — these two
     // are the ones to reach for when the sphere itself is too hot or too solid,
     // because they move it and nothing else. Both at 1 is untouched.
-    R(body, s.moon, '밝기', 0, 3, 0.01, '본체 밝기');
-    R(body, s.moon, '불투명도', 0, 1, 0.01, '본체 불투명도');
+    R(body, s.moon, 'brightness', 0, 3, 0.01, '본체 밝기');
+    R(body, s.moon, 'opacity', 0, 1, 0.01, '본체 불투명도');
     // The one control here that changes the picture rather than the finish:
     // where the moon's *own* sun is, from full through half to new.
     R(body, s.moon, 'phase', 0, Math.PI, 0.01, '위상 (보름 → 초승)');
     R(body, s.moon, 'phaseTilt', -1.2, 1.2, 0.01, '위상 기울기');
     R(body, s.moon, 'terminator', 0.005, 0.5, 0.005, '명암 경계 부드러움');
     R(body, s.moon, 'flatten', 0.1, 2, 0.01, '가장자리 평탄도');
-    R(body, s.moon, '지구광', 0, 0.4, 0.005, '지구광');
+    R(body, s.moon, 'earthshine', 0, 0.4, 0.005, '지구광');
     R(body, s.moon, 'edge', 0.001, 0.4, 0.001, '가장자리 페이드');
     R(body, s.moon, 'displacement', 0, 0.25, 0.005, '요철 (지오메트리)');
     R(body, s.moon, 'relief', 0, 1, 0.01, '요철 (법선)');
     R(body, s.moon, 'ao', 0, 1, 0.01, '크레이터 그림자(AO)');
-    R(body, s.moon, '광택', 0, 0.5, 0.005, '광택');
+    R(body, s.moon, 'sheen', 0, 0.5, 0.005, '광택');
     R(body, s.moon, 'textureScale', 0.2, 6, 0.05, '크레이터 크기');
     R(body, s.moon, 'blendSharpness', 1, 16, 0.5, '투영 블렌드');
     R(body, s.moon, 'tilt', -Math.PI, Math.PI, 0.01, '면 기울기');
@@ -1597,9 +1597,9 @@ export class Editor {
 
     // The crescents themselves: what is thrown, and what it is made of.
     const wave = folder.addFolder('날린 참격');
-    wave.add(c.wave, '켜기').name('켜기');
+    wave.add(c.wave, 'enabled').name('켜기');
     R(wave, c.wave, 'aimHeight', 0, 2.2, 0.01, '조준 높이 (m)');
-    R(wave, c.wave, '크기', 0.4, 4, 0.05, '호 반경 (m)');
+    R(wave, c.wave, 'size', 0.4, 4, 0.05, '호 반경 (m)');
     R(wave, c.wave, 'speed', 8, 90, 1, '비행 속도 (m/s)');
     R(wave, c.wave, 'life', 0.2, 3, 0.05, '만료 (초)');
     R(wave, c.wave, 'hold', 0.05, 1, 0.01, '접촉 시 정지 (초)');
@@ -1609,7 +1609,7 @@ export class Editor {
     // The shape. `converge` and `tipTaper` decide the silhouette, `razor` and
     // `erode` decide whether it reads as an edge or as smoke.
     const shape = wave.addFolder('형태');
-    R(shape, c.wave, '퍼짐', 0.6, 3.1, 0.01, '호 각도 (rad)');
+    R(shape, c.wave, 'spread', 0.6, 3.1, 0.01, '호 각도 (rad)');
     R(shape, c.wave, 'converge', 0, 0.95, 0.01, '안쪽 가장자리 휘어짐');
     R(shape, c.wave, 'bow', 0, 1, 0.01, '끝이 벌어짐 정도');
     R(shape, c.wave, 'tail', 0, 2, 0.01, '베일 길이 (반경 배수)');
@@ -1631,7 +1631,7 @@ export class Editor {
     // soloed against the other four, which is the only sane way to tune a stack
     // of additive light.
     const rift = folder.addFolder('마무리 폭발');
-    rift.add(c.rift, '켜기').name('켜기');
+    rift.add(c.rift, 'enabled').name('켜기');
 
     // 1. The air around it, lit. There is no bloom pass worth the name on this
     //    stage, so this layer is the glow.
@@ -1648,7 +1648,7 @@ export class Editor {
     const shell = rift.addFolder('2 · 외피');
     R(shell, c.rift, 'radius', 0.3, 6, 0.05, '도달 (m)');
     R(shell, c.rift, 'life', 0.1, 2, 0.01, '지속 (초)');
-    R(shell, c.rift, '프레넬', 0.4, 6, 0.05, '림 집중도');
+    R(shell, c.rift, 'fresnel', 0.4, 6, 0.05, '림 집중도');
     R(shell, c.rift, 'churn', 0, 1, 0.01, '표면 변형');
     R(shell, c.rift, 'churnSpeed', 0, 8, 0.05, '표면 흐름');
     R(shell, c.rift, 'intensity', 0, 10, 0.05, '밝기');
@@ -1676,7 +1676,7 @@ export class Editor {
     R(rings, c.rift, 'ringWidth', 0.01, 0.4, 0.005, '띠 너비');
     R(rings, c.rift, 'ringSoftness', 0.01, 0.5, 0.005, '띠 페더');
     R(rings, c.rift, 'ringSpin', 0, 10, 0.05, '회전 속도 (rad/s)');
-    R(rings, c.rift, '살', 0, 60, 1, '살');
+    R(rings, c.rift, 'spokes', 0, 60, 1, '살');
     R(rings, c.rift, 'spokeDepth', 0, 1, 0.01, '살 깊이');
     R(rings, c.rift, 'ringIntensity', 0, 10, 0.05, '밝기');
     rings.addColor(c.rift, 'ringColor').name('색상');
@@ -1697,16 +1697,16 @@ export class Editor {
     // The flash and the shower — `vfx/BladeImpact.js`, and the three
     // multipliers that separate leaving, landing and finishing.
     const impact = folder.addFolder('섬광 & 불꽃');
-    impact.add(c.impact, '켜기').name('켜기');
+    impact.add(c.impact, 'enabled').name('켜기');
     R(impact, c, 'launchFlash', 0, 3, 0.05, '발사 시 섬광 배율');
     R(impact, c, 'arriveFlash', 0, 3, 0.05, '착탄 시 섬광 배율');
     R(impact, c, 'finishFlash', 0, 4, 0.05, '마무리 시 섬광 배율');
     R(impact, c.impact, 'life', 0.05, 1, 0.01, '섬광 수명 (초)');
-    R(impact, c.impact, '크기', 0.1, 3, 0.05, '섬광 크기 (m)');
+    R(impact, c.impact, 'size', 0.1, 3, 0.05, '섬광 크기 (m)');
     R(impact, c.impact, 'intensity', 0, 10, 0.05, '밝기');
-    R(impact, c.impact, '가시', 0, 16, 1, '별 가시');
+    R(impact, c.impact, 'spikes', 0, 16, 1, '별 가시');
     R(impact, c.impact, 'spikeLength', 0, 4, 0.05, '가시 길이');
-    R(impact, c.impact, '불꽃 수', 0, 300, 1, '불꽃 수');
+    R(impact, c.impact, 'sparks', 0, 300, 1, '불꽃 수');
     R(impact, c.impact, 'sparkSpeed', 0, 30, 0.1, '불꽃 속도 (m/s)');
     R(impact, c.impact, 'sparkSpread', 0, 1.3, 0.01, '불꽃 콘 (rad)');
     R(impact, c.impact, 'sparkLife', 0.05, 2, 0.01, '불꽃 수명 (초)');
@@ -1720,17 +1720,17 @@ export class Editor {
 
     // The ground's answer under the finisher — `vfx/ShockRing.js`.
     const shock = folder.addFolder('지면 파동');
-    shock.add(c.shock, '켜기').name('켜기');
+    shock.add(c.shock, 'enabled').name('켜기');
     R(shock, c.shock, 'radius', 0.5, 10, 0.1, '도달 (m)');
     R(shock, c.shock, 'life', 0.1, 2, 0.01, '소요 시간 (초)');
     R(shock, c.shock, 'intensity', 0, 8, 0.05, '밝기');
     R(shock, c.shock, 'width', 0.005, 0.4, 0.005, '선단 너비');
     R(shock, c.shock, 'softness', 0.005, 0.4, 0.005, '선단 페더');
-    R(shock, c.shock, '균열 수', 0, 30, 1, '균열 수');
+    R(shock, c.shock, 'cracks', 0, 30, 1, '균열 수');
     R(shock, c.shock, 'crackLength', 0, 1.5, 0.01, '균열 길이');
     R(shock, c.shock, 'crackWidth', 0.001, 0.1, 0.001, '균열 너비');
     R(shock, c.shock, 'crackGlow', 0, 4, 0.05, '균열 발광');
-    R(shock, c.shock, '띄움', 0, 0.2, 0.001, '바닥에서 띄움 (m)');
+    R(shock, c.shock, 'lift', 0, 0.2, 0.001, '바닥에서 띄움 (m)');
     shock.addColor(c.shock, 'color').name('선단 색상');
     shock.addColor(c.shock, 'crackColor').name('균열 색상');
 
@@ -1767,7 +1767,7 @@ export class Editor {
     // one worth dragging: it is the exponent between the two solidities, and it
     // is the difference between a body of glass and a bare outline.
     R(dash, d.veil, 'core', 0, 1, 0.01, '정면 불투명도');
-    R(dash, d.veil, '림', 0, 1, 0.01, '림 불투명도');
+    R(dash, d.veil, 'rim', 0, 1, 0.01, '림 불투명도');
     R(dash, d.veil, 'power', 0.2, 6, 0.05, '투명도 곡선');
     R(dash, d, 'edgeEmissive', 0, 20, 0.1, '소멸 발광');
     R(dash, d, 'edgeWidth', 0.01, 0.5, 0.005, '소멸 너비');
@@ -1810,12 +1810,12 @@ export class Editor {
     // 1. The circle on the ground. The same shader the light's seal uses.
     const seal = folder.addFolder('1 · 룬');
     R(seal, c.seal, 'radius', 0.4, 6, 0.05, '반경 (m)');
-    R(seal, c.seal, '띄움', 0, 0.3, 0.005, '바닥에서 띄움 (m)');
+    R(seal, c.seal, 'lift', 0, 0.3, 0.005, '바닥에서 띄움 (m)');
     R(seal, c.seal, 'intensity', 0, 6, 0.05, '밝기');
     R(seal, c.seal, 'spin', -1, 1, 0.005, '초당 회전');
-    R(seal, c.seal, '눈금', 4, 120, 1, '눈금');
-    R(seal, c.seal, '룬', 3, 40, 1, '문자 수');
-    R(seal, c.seal, '살', 2, 24, 1, '살');
+    R(seal, c.seal, 'ticks', 4, 120, 1, '눈금');
+    R(seal, c.seal, 'runes', 3, 40, 1, '문자 수');
+    R(seal, c.seal, 'spokes', 2, 24, 1, '살');
     R(seal, c.seal, 'width', 0.002, 0.06, 0.001, '선 굵기');
     R(seal, c.seal, 'softness', 0.002, 0.06, 0.001, '선 페더');
     R(seal, c.seal, 'haze', 0, 1.5, 0.01, '내부 모인 빛');
@@ -1827,7 +1827,7 @@ export class Editor {
 
     // 2. The column. `axis gather` is the control; everything else dresses it.
     const beam = folder.addFolder('2 · 광선');
-    beam.add(c.beam, '켜기').name('켜기');
+    beam.add(c.beam, 'enabled').name('켜기');
     R(beam, c.beam, 'height', 1, 20, 0.1, '높이 (m)');
     R(beam, c.beam, 'radius', 0.05, 3, 0.01, '반경 (m)');
     R(beam, c.beam, 'flare', 0, 2, 0.01, 'foot flare');
@@ -1850,7 +1850,7 @@ export class Editor {
 
     // 3. The cords. `count` is capped at 6 by the buffer they share.
     const spiral = folder.addFolder('3 · 소용돌이');
-    spiral.add(c.spiral, '켜기').name('켜기');
+    spiral.add(c.spiral, 'enabled').name('켜기');
     R(spiral, c.spiral, 'count', 0, 6, 1, 'cords');
     R(spiral, c.spiral, 'radius', 0.05, 3, 0.01, '반경 (m)');
     R(spiral, c.spiral, 'reach', 0.1, 1.2, 0.01, 'run × the height');
@@ -1868,15 +1868,15 @@ export class Editor {
 
     // 4. The burst at its foot — the blades' own system again.
     const impact = folder.addFolder('4 · 폭발');
-    impact.add(c.impact, '켜기').name('켜기');
+    impact.add(c.impact, 'enabled').name('켜기');
     R(impact, c, 'strikeFlash', 0, 3, 0.05, 'size ×');
     R(impact, c, 'impactHeight', 0, 3, 0.05, 'thrown at height (m)');
     R(impact, c.impact, 'life', 0.05, 1.5, 0.01, '섬광 수명 (초)');
-    R(impact, c.impact, '크기', 0.1, 4, 0.05, '섬광 크기 (m)');
+    R(impact, c.impact, 'size', 0.1, 4, 0.05, '섬광 크기 (m)');
     R(impact, c.impact, 'intensity', 0, 10, 0.05, '밝기');
-    R(impact, c.impact, '가시', 0, 16, 1, '별 가시');
+    R(impact, c.impact, 'spikes', 0, 16, 1, '별 가시');
     R(impact, c.impact, 'spikeLength', 0, 4, 0.05, '가시 길이');
-    R(impact, c.impact, '불꽃 수', 0, 300, 1, '불꽃 수');
+    R(impact, c.impact, 'sparks', 0, 300, 1, '불꽃 수');
     R(impact, c.impact, 'sparkSpeed', 0, 30, 0.1, '불꽃 속도 (m/s)');
     R(impact, c.impact, 'sparkSpread', 0, 1.3, 0.01, '불꽃 콘 (rad)');
     R(impact, c.impact, 'sparkLife', 0.05, 2, 0.01, '불꽃 수명 (초)');
@@ -1890,13 +1890,13 @@ export class Editor {
 
     // 5. The grain. `count` is nearly free — each shard is a closed form.
     const grain = folder.addFolder('5 · 입자');
-    grain.add(c.grain, '켜기').name('켜기');
+    grain.add(c.grain, 'enabled').name('켜기');
     R(grain, c.grain, 'count', 0, 320, 1, '파편 수');
     R(grain, c.grain, 'radius', 0.05, 4, 0.05, 'start out at (m)');
-    R(grain, c.grain, '퍼짐', 0, 4, 0.05, 'drift out by (m)');
+    R(grain, c.grain, 'spread', 0, 4, 0.05, 'drift out by (m)');
     R(grain, c.grain, 'rise', 0.5, 16, 0.1, 'climb (m)');
     R(grain, c.grain, 'swirl', -10, 10, 0.05, '회전 속도 (rad/s)');
-    R(grain, c.grain, '크기', 0.005, 0.4, 0.005, '크기 (m)');
+    R(grain, c.grain, 'size', 0.005, 0.4, 0.005, '크기 (m)');
     R(grain, c.grain, 'life', 0.2, 6, 0.05, 'one loop takes (s)');
     R(grain, c.grain, 'spike', 1, 16, 0.1, 'needle length');
     R(grain, c.grain, 'intensity', 0, 8, 0.05, '밝기');
@@ -2511,10 +2511,10 @@ export class Editor {
 
     const halves = folder.addFolder('각각의 토막이 가지는 것');
     R(halves, s.upper, 'impulse', 0, 3, 0.05, 'top: force ×');
-    R(halves, s.upper, '띄움', 0, 3, 0.05, 'top: lift ×');
+    R(halves, s.upper, 'lift', 0, 3, 0.05, 'top: lift ×');
     R(halves, s.upper, 'spin', 0, 3, 0.05, 'top: spin ×');
     R(halves, s.lower, 'impulse', 0, 2, 0.01, 'legs: force ×');
-    R(halves, s.lower, '띄움', 0, 2, 0.01, 'legs: lift ×');
+    R(halves, s.lower, 'lift', 0, 2, 0.01, 'legs: lift ×');
     R(halves, s.lower, 'spin', 0, 2, 0.01, 'legs: spin ×');
 
     // Turn this off and the torso falls through the legs, which is the clearest
