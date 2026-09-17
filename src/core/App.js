@@ -223,7 +223,7 @@ export class App {
     this.ascendance = new Ascendance({
       terrain: this.terrain,
       onManifest: (shake) => this.rig.shake(shake),
-      onExpire: () => this.toast.show('The light leaves you')
+      onExpire: () => this.toast.show('빛이 당신을 떠납니다')
     });
     this.scene.add(this.ascendance.group);
 
@@ -236,7 +236,7 @@ export class App {
     this.shadowBoost = new ShadowBoost({
       terrain: this.terrain,
       onErupt: (shake) => this.rig.shake(shake),
-      onExpire: () => this.toast.show('The dark goes back into the ground')
+      onExpire: () => this.toast.show('어둠이 땅속으로 돌아갑니다')
     });
     this.scene.add(this.shadowBoost.group);
 
@@ -379,7 +379,7 @@ export class App {
       onToast: (message) => this.toast.show(message),
       onRespawnEnemies: () => {
         this.enemies.respawnAll();
-        this.toast.show('A fresh ring of them');
+        this.toast.show('새 적 무리가 둘러쌌습니다');
       },
       onCastAscendance: () => this._castAscendance(),
       onCastShadowBoost: () => this._castShadowBoost()
@@ -424,7 +424,7 @@ export class App {
       switch (event.code) {
         case 'KeyP':
           this.paused = !this.paused;
-          this.toast.show(this.paused ? 'Paused — the editor still applies' : 'Resumed');
+          this.toast.show(this.paused ? '일시정지 — 에디터는 계속 적용됩니다' : '재개');
           break;
         case 'KeyG':
           // A panel full of sliders opened under a captured pointer is a panel
@@ -519,7 +519,7 @@ export class App {
     const jump = this.character.jump;
     const hop = this.character.hop;
     if (!jump?.locked && !hop?.locked) return false;
-    this.toast.show('Not in the air — a boon needs the ground under you');
+    this.toast.show('공중에서는 시전할 수 없습니다 — 가호는 땅 위에서만');
     return true;
   }
 
@@ -537,19 +537,19 @@ export class App {
     // on the set for a shaft of light to come down onto — nor a frame loop that
     // would advance it if there were.
     if (this.inCharacterScreen) {
-      this.toast.show('Not in here — the light needs the stage');
+      this.toast.show('여기가 아닙니다 — 빛은 스테이지에서만');
       return;
     }
     if (this._groundedOnly()) return;
     if (!settings.ascendance.enabled) {
-      this.toast.show('Ascendance is switched off in the editor');
+      this.toast.show('승천이 에디터에서 꺼져 있습니다');
       return;
     }
     if (this.ascendance.active) {
       this.toast.show(
         this.ascendance.held
-          ? `The light is already on you — ${Math.ceil(this.ascendance.remaining)}s`
-          : 'It is already coming down'
+          ? `빛이 이미 당신 위에 있습니다 — ${Math.ceil(this.ascendance.remaining)}초`
+          : '이미 내려오고 있습니다'
       );
       return;
     }
@@ -557,7 +557,7 @@ export class App {
     const position = this.character.position;
     const groundY = this.terrain.heightAt(position.x, position.z);
     if (!this.ascendance.cast(position.x, groundY, position.z)) return;
-    this.toast.show(`Ascendance — ${settings.ascendance.duration}s of it, once the light lands`);
+    this.toast.show(`승천 — 빛이 내려앉으면 ${settings.ascendance.duration}초간`);
   }
 
   /**
@@ -574,19 +574,19 @@ export class App {
     // on the set for a column of shadow to come up through — nor a frame loop
     // that would advance it if there were.
     if (this.inCharacterScreen) {
-      this.toast.show('Not in here — the dark needs ground to come out of');
+      this.toast.show('여기가 아닙니다 — 어둠은 땅에서 솟아오릅니다');
       return;
     }
     if (this._groundedOnly()) return;
     if (!settings.shadowBoost.enabled) {
-      this.toast.show('Shadow Boost is switched off in the editor');
+      this.toast.show('그림자 강화가 에디터에서 꺼져 있습니다');
       return;
     }
     if (this.shadowBoost.active) {
       this.toast.show(
         this.shadowBoost.held
-          ? `The dark is already on you — ${Math.ceil(this.shadowBoost.remaining)}s`
-          : 'It is already coming up'
+          ? `어둠이 이미 당신 위에 있습니다 — ${Math.ceil(this.shadowBoost.remaining)}초`
+          : '이미 솟아오르고 있습니다'
       );
       return;
     }
@@ -595,7 +595,7 @@ export class App {
     const groundY = this.terrain.heightAt(position.x, position.z);
     if (!this.shadowBoost.cast(position.x, groundY, position.z)) return;
     this.toast.show(
-      `Shadow Boost — ${settings.shadowBoost.duration}s of it, once the column is through`
+      `그림자 강화 — 기둥이 뚫고 지나가면 ${settings.shadowBoost.duration}초간`
     );
   }
 
@@ -611,8 +611,8 @@ export class App {
     const side = this.gunplay.swapShoulder();
     this.toast.show(
       this.gunplay.drawn
-        ? `Over the ${side} shoulder`
-        : `Over the ${side} shoulder — draw the rifle to see it`
+        ? `${side === 'left' ? '왼쪽' : '오른쪽'} 어깨로`
+        : `${side === 'left' ? '왼쪽' : '오른쪽'} 어깨로 — 소총을 꺼내면 보입니다`
     );
   }
 
@@ -629,7 +629,8 @@ export class App {
     if (!weapons || weapons.switching) return;
     const previous = weapons.current;
     if (!weapons.toggle() || weapons.current === previous) return;
-    this.toast.show(`${findItem(weapons.current)?.name ?? weapons.current} in hand`);
+    const name = findItem(weapons.current)?.name ?? weapons.current;
+    this.toast.show(`${name}을(를) 손에 듭니다`);
   }
 
   /**
@@ -698,7 +699,7 @@ export class App {
     this.gunplay.standDown();
     this.rig.park(true);
     this.post.setView(screen.stage.scene, screen.camera.camera);
-    this.toast.show('Character screen — drag to orbit · right-drag to pan · wheel to zoom');
+    this.toast.show('캐릭터실 — 드래그로 궤도 회전 · 우측 드래그로 화면 이동 · 휠로 줌');
   }
 
   /**
@@ -1143,6 +1144,7 @@ export class App {
   }
 
   /** However the screen was closed, the play stage comes back here. */
+  /** However the screen was closed, the play stage comes back here. */
   _onScreenExit() {
     // The orbit drag comes back with the stage; the pointer does not, and is
     // not taken back for the player either. They left this stage with a cursor
@@ -1150,7 +1152,7 @@ export class App {
     // they are done pointing at things.
     this.rig.park(false);
     this.post.setView(this.scene, this.camera);
-    this.toast.show('Back on the stage');
+    this.toast.show('스테이지로 돌아왔습니다');
   }
 
   /* ------------------------------------------------------------------ */
@@ -1159,12 +1161,12 @@ export class App {
   async load() {
     const assets = new AssetLoader();
 
-    this.loading.setProgress(0.05, 'Loading environment…');
+    this.loading.setProgress(0.05, '환경 불러오는 중…');
     const hdr = await assets.loadHDR(HDR_URL);
     await this.environment.loadEnvironment(hdr);
     frame.uEnvMap.value = this.environment.equirect;
 
-    this.loading.setProgress(0.3, 'Loading the forest floor…');
+    this.loading.setProgress(0.3, '숲 바닥 불러오는 중…');
     await this.ground.loadTextures(assets);
     // And what is lying on it. Before the shader warm-up below, so the two leaf
     // materials are compiled with everything else rather than on the first frame
@@ -1184,10 +1186,10 @@ export class App {
     this.terrain.update();
     this.ground.update(0, 0, 0);
 
-    this.loading.setProgress(0.55, 'Loading character, materials & animations…');
+    this.loading.setProgress(0.55, '캐릭터, 재질, 애니메이션 불러오는 중…');
     await this.character.load(assets);
 
-    this.loading.setProgress(0.72, 'Waking the enemies…');
+    this.loading.setProgress(0.72, '적을 깨우는 중…');
     await this.enemies.load(assets);
     // An attack knows the frame the blow lands and nothing else; what being hit
     // means is decided here. Each hands over its own settings block, so the
@@ -1203,7 +1205,7 @@ export class App {
     // the scene for the shader warm-up below.
     this.enemies.respawnAll();
 
-    this.loading.setProgress(0.8, 'Building the character screen…');
+    this.loading.setProgress(0.8, '캐릭터실 구성 중…');
     // The set and its rig cost nothing until they are drawn, and building them
     // now means `C` is instant. The equipment models themselves stay on disk
     // until the screen is opened — see `EquipmentLibrary`.
@@ -1217,7 +1219,7 @@ export class App {
       onExit: () => this._onScreenExit()
     });
 
-    this.loading.setProgress(0.83, 'Equipping…');
+    this.loading.setProgress(0.83, '장비 장착 중…');
     // The starting loadout — whatever was last dialled in on the set, or the
     // catalog's defaults on a first run. Gear hangs off the skeleton rather than
     // off either stage, so equipping here puts it on the body for the play scene
@@ -1229,7 +1231,7 @@ export class App {
     // been on screen yet.
     this.characterScreen.weapons.restore();
 
-    this.loading.setProgress(0.85, 'Compiling shaders…');
+    this.loading.setProgress(0.85, '셰이더 컴파일 중…');
     // Compile everything up front so the first frame never stutters — both
     // stages, so opening the character screen is not its own first frame.
     await this.renderer.gl.compileAsync(
@@ -1243,11 +1245,11 @@ export class App {
     await assets.settled();
     assets.dispose();
 
-    this.loading.setProgress(1, 'Ready');
+    this.loading.setProgress(1, '준비 완료');
     this.loading.hide();
     // The moves are named by the row along the bottom, so this only has to
     // cover what the row does not: the stick, and where to look for the rest.
-    this.toast.show('WASD to move · Shift to run · your moves are along the bottom');
+    this.toast.show('WASD로 이동 · Shift로 달리기 · 기술은 화면 하단에 표시됩니다');
 
     this.start();
   }

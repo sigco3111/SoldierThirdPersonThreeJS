@@ -1,605 +1,285 @@
-# Soldier — a third-person Three.js template
+# 캐릭터 장비실 — Three.js 한글판
 
-A complete third-person action stage in the browser: a rigged soldier on an
-endless procedural night landscape, with locomotion, motion-warped melee, four
-thrown abilities, two boons, a shoulder-camera shooter, ragdoll deaths and an
-equipment studio to dress the body in.
+> 원본 [achrefelouafi/SoldierThirdPersonThreeJS](https://github.com/achrefelouafi/SoldierThirdPersonThreeJS) 의 **포크가 아닌 한글화 사본**입니다. 모든 게임 로직·렌더링·자산은 그대로 두고 사용자 노출 문자열(메뉴, HUD, 토스트, 에디터 라벨 등)만 한국어로 옮겼습니다.
 
-No engine, no physics library, no asset pipeline. Three.js, Vite, and one file
-of settings that everything reads every frame.
+밤의 무대 위에 갑주를 입은 군인이 서 있습니다. 가드를 든 손에는 태도가, 다른 손에는 소총이 매달려 있고, 그라운드는 절차적 지형이 끝없이 펼쳐집니다. 클릭 한 번이 시점을 잡고, 그 뒤로는 마우스만 돌리면 됩니다.
 
-![The stage](docs/media/stage.jpg)
+라이브 데모는 GitHub Pages 에서 바로 확인할 수 있고, 코드 베이스는 작은 모듈들로 분리되어 있어 *한 가지 동작(점프, 검격, 가호, 셰이더)* 이 어떻게 만들어지는지를 그대로 읽어낼 수 있습니다.
+
+---
+
+## 1. 시작하기
+
+### 1-1. 라이브 데모 (추천)
+
+가장 빠르게 만져볼 수 있는 방법입니다. 별도 설치 없이 브라우저에서 바로 실행됩니다.
+
+```
+https://<your-username>.github.io/SoldierThirdPersonThreeJS/
+```
+
+GitHub 저장소의 **Settings → Pages → Source: GitHub Actions** 로 설정하면 `main` 브랜치에 푸시될 때마다 자동으로 빌드·배포됩니다. 빌드 산출물은 `dist/` 폴더에 모입니다.
+
+### 1-2. 로컬 실행 (개발자용)
+
+저장소를 클론한 뒤 의존성을 설치하고 개발 서버를 띄우면 됩니다.
 
 ```bash
+git clone https://github.com/<your-username>/SoldierThirdPersonThreeJS.git
+cd SoldierThirdPersonThreeJS
 npm install
-npm run dev      # http://127.0.0.1:5173
+npm run dev        # http://127.0.0.1:5173 에서 HMR 모드로 실행
+```
+
+운영 빌드를 미리 보고 싶다면:
+
+```bash
 npm run build
+npm run preview    # 빌드 산출물을 정적 서버로 띄움
 ```
 
-## Controls
-
-| | |
-| --- | --- |
-| `WASD` / arrows | Move. `Shift` runs. |
-| `Space` | Leap — a running long jump, or an in-place hop at any lesser pace. |
-| `E` · `R` · `T` · `Q` | Kick · Slash Hit · Slide Cut · Flip Kick. |
-| `Z` | Sword Combo — throws two cuts across the ground at a body up to eleven metres off, then closes and takes it apart. |
-| `B` | Unmaking — strikes twice at the nearest body: a rune into the ground under it, then a column of void up through it. Nothing is left to fall. |
-| `V` | Crimson Rite — marks the nearest body and calls three katanas up out of the dark around it. They go in one after another and come out together. |
-| `C` | Shadow Execution — five katanas circle the mark, closing, and then go in all at once. What they come out of does not fall over, it comes apart. |
-| `N` · `M` | Ascendance · Shadow Boost — the two boons. Called down on yourself rather than thrown at anybody, and carried for ten seconds. |
-| `1` | Swap the weapon. The katana burns away and the rifle burns in, or the other way round. |
-| `Tab` | The equipment studio. |
-| click · mouse | Take the pointer, then move the mouse to turn the view. |
-| `Esc` | Give the cursor back, for the editor and the panels. Clicking the canvas takes it again. |
-| wheel | Zoom. |
-| `G` · `F` · `P` | Editor · frame stats · pause. |
-
-The pointer is the stage's, not any one weapon's
-([core/PointerLook.js](src/core/PointerLook.js)): a click captures it and the
-mouse turns the view with a sword in hand, a rifle in hand or nothing at all,
-and `Esc` is the one way back to a cursor from anywhere. The orbit drag is still
-there while the cursor is free, so nothing is lost by pressing it. The one place
-the pointer is never taken is the equipment studio, which is a room you point at
-things in.
-
-**With the rifle drawn**, the whole stage becomes a shooter — the lens steps
-onto a shoulder, a reticle comes up, and the torso points at whatever it is on.
-
-![Down the sights](docs/media/rifle.jpg)
-
-| | |
-| --- | --- |
-| hold left | Fire. Three rounds in the body or one in the head puts someone down. |
-| hold right | Down the sights — closer, narrower, and far more accurate. The view slows with them. |
-| `H` · middle click | Cross the lens to the other shoulder. |
-
-The moves are also drawn along the bottom of the screen, one panel per kind,
-and every one of them is a line in [src/config/abilities.js](src/config/abilities.js) —
-rebinding a key, renaming a move or adding one is an edit to that file and
-nothing else. `core/Input.js` builds its key map from it, `ui/ActionHUD.js`
-draws the panels from it, and `core/App.js` resolves a state per `id` each
-frame.
+요구 사항: **Node.js 22 이상**, WebGL 2 를 지원하는 그래픽 카드. 외부 폰트나 추가 CDN 없이 `public/` 안의 자산만 사용합니다.
 
 ---
 
-## The world
+## 2. 조작법
 
-![Night](docs/media/world.jpg)
+### 2-1. 기본 키
 
-One height field, one sky, one body of air, and nothing on screen is allowed to
-disagree with any of them.
+| 키 | 동작 |
+| --- | --- |
+| **클릭** | 마우스 시점 캡처 (FPS 시점 모드) |
+| **마우스 이동** | 시점 회전 (좌/우 = 회전, 상/하 = 피치) |
+| **WASD** / 방향키 | 캐릭터 이동 |
+| **Shift** | 달리기 |
+| **Space** | 도약 (달리기 중) / 짧은 점프 (정지·걷기) |
+| **Esc** | 마우스 커서 해제 (메뉴 조작용) |
+| **휠** | 카메라 줌인/아웃 |
 
-| System | File | Notes |
+### 2-2. 무기와 전투
+
+| 키 | 동작 |
+| --- | --- |
+| **1** | 무기 교체 (태도 ↔ 소총) |
+| **H** | 어깨 시점 교체 (왼쪽 ↔ 오른쪽) |
+| **E** | 발차기 — 짧고 빠른 타격 |
+| **R** | 베기 일격 — 길게 휘둘러 허리를 가름 |
+| **T** | 슬라이드 베기 — 미끄러지며 적을 통과하며 베기 |
+| **Q** | 플립 킥 — 발을 박고 공중제비로 탈출 |
+| **Z** | 검격 연속 — 두 번의 참격을 날리고 어둠에서 마무리 |
+| **B** | 소멸 — 룬을 새기고 공허의 기둥을 솟구침 |
+| **V** | 진홍 의식 — 세 자루 도검을 불러 일시에 찔러 넣음 |
+| **C** | 그림자 처형 — 다섯 자루 도검을 불러 빙글빙글 돌며 해체 |
+| **N** | 승천 (가호) — 자신에게 빛을 내려 10초간 강화 |
+| **M** | 그림자 강화 (가호) — 발 밑에서 어둠을 솟구쳐 10초간 강화 |
+| **Tab** | 캐릭터실 — 장비 점검·조정 모드 |
+| **G** | 스테이지 에디터 — 라이브 환경/이펙트 튜닝 |
+| **F** | 성능 표시 (FPS / 드로우 콜 / 트라이앵글 수) |
+| **P** | 일시정지 (에디터는 계속 적용) |
+
+### 2-3. 총기 사용
+
+| 입력 | 동작 |
+| --- | --- |
+| **마우스 좌클릭 (누르고 있기)** | 발사 (반자동/연사) |
+| **마우스 우클릭 (꾹 누르기)** | 조준경 (들어올림) — 손 떼면 강한 사격 |
+| **마우스 휠 클릭** | 어깨 교체 |
+
+---
+
+## 3. 게임 모드
+
+이 프로젝트에는 두 개의 *장면* 이 있고, 정확히 하나의 값이 둘 사이를 결정합니다 — `characterScreen.active`. 이 값에 따라 포스트 프로세싱이 어느 씬을 그릴지, 어느 카메라를 쓸지, 어떤 업데이트 경로가 실행될지가 모두 정해집니다.
+
+| 모드 | 진입 방법 | 특징 |
 | --- | --- | --- |
-| Terrain | [src/world/Terrain.js](src/world/Terrain.js) | The world's height field, and the only thing allowed to answer "how high is the ground here". Table-driven value noise, evaluated identically on the GPU (the floor, the litter) and in JS (the character, the camera, the shadow focus). Every knob is a live uniform. |
-| Floor | [src/world/Ground.js](src/world/Ground.js) | A grid that follows the character and is displaced up the height field in its vertex shader, so there is no world edge to walk off. The tiling is world-locked through the texture offset and everything the shader does is a function of world position, so only the light pool travels. |
-| Sky | [src/world/Sky.js](src/world/Sky.js) | One fullscreen shader: a gradient whose horizon *is* the haze colour, a cell-hashed star field, and a moon. It **owns where the moon is** — `sky.moon.azimuth/elevation` resolve into `frame.uLightDir`, so the disc, the glare, the haze's inscatter lobe and the ground mist's lit side can never disagree. |
-| Moon | [src/world/Moon.js](src/world/Moon.js) | The moon as a body rather than a dot product. A sphere carrying a real lunar surface material, projected **triplanar in object space** — the maps are 1024² squares of ground, so wrapping them on sphere UVs would seam the face and pinch every crater into the poles. The relief is *geometry*: the height map displaces vertices, so crater rims break the silhouette instead of being shaded onto a circle. `Sky` stands its own disc down whenever this one is up. |
-| Air | [src/world/Atmosphere.js](src/world/Atmosphere.js) | What replaces three's linear fog: an analytic height-fog integral with a moonlit forward lobe, so haze pools in the hollows and glows looking into the moon. One `exp` per fragment more than a linear fog. |
-| Ground fog | [src/world/GroundFog.js](src/world/GroundFog.js) | Soft billboard puffs carried downwind, spreading as they age, reading the floor's own baked height field so they hug the ground and dissolve into it. The whole trajectory is closed-form in the vertex shader — the CPU only writes the handful of slots that expired this frame. |
-| Leaves | [src/world/Leaves.js](src/world/Leaves.js) | Two populations, one look: 5 600 leaves lying on the floor ([LeafLitter](src/world/LeafLitter.js)) and 260 in the air ([LeafDrift](src/world/LeafDrift.js)), off one sheet of nine leaves with one grade, one backlight and one wind. Drawn opaque and **alpha-tested** rather than blended — they write depth, need no sorting, and can be drawn in any order, which is the only reason they cost one draw call each. Walking through the litter scatters it: the body's position and its ground velocity go in raw, so a sprint throws leaves and standing still disturbs nothing. |
-| Lighting | [src/world/Environment.js](src/world/Environment.js) | One cool key with a 4096² shadow map re-centred on the character, a cool rim behind it, a deep blue sky fill and a pale bounce off the ground. The key and the rim light **the character only**: three has no per-object light filtering, so the world's own surfaces are patched to drop every directional light instead. The HDR probe is kept only as a dim specular response and is never the visible sky. |
-| Contact shadows | [src/world/ContactShadows.js](src/world/ContactShadows.js) | The tight darkening under the feet the sun's shadow map cannot resolve. |
-| Camera | [src/core/CameraRig.js](src/core/CameraRig.js) | Orbit rig whose distance always resolves back to `settings.camera.distance`, so the wheel and the settings file never disagree. |
-| Pointer | [src/core/PointerLook.js](src/core/PointerLook.js) | Captures the mouse for the whole stage and turns its deltas into view; `Esc` hands the cursor back and stands the orbit drag up in its place. |
-| Post | [src/postprocessing/PostProcessing.js](src/postprocessing/PostProcessing.js) | Bloom → tone map → one grade pass (aberration, contrast/saturation/temperature, vignette, grain). |
+| **무대 (play)** | 부팅 직후 / Tab 다시 누름 / 닫기 버튼 | 시점 캡처 모드, 적 등장, 전투 시스템 활성화 |
+| **캐릭터실 (studio)** | Tab | 자유 궤도 카메라, 장비 교체·배치, 포즈 프리뷰, 스켈레톤 표시 |
 
-### The terrain, and why the noise is a table
-
-`terrainHeightAt(vec2)` in
-[src/shaders/lib/terrain.glsl.js](src/shaders/lib/terrain.glsl.js) is the world's
-surface. The floor mesh is displaced by it in its vertex shader, the leaf litter
-lies on it, and [src/world/Terrain.js](src/world/Terrain.js) mirrors the same
-arithmetic in JS so the character, the camera anchor, the contact shadow and the
-sun's shadow focus all stand on exactly the ground you can see.
-
-That mirroring is why the noise is **table-driven** rather than the usual
-`snoise`. A procedural hash (`fract(sin(...) * 43758.5)`) does not evaluate
-identically on a GPU and in JS — it agrees to a few decimals, which is
-centimetres of terrain, which is a character sinking into a hill. A 256×256 byte
-table sampled with `NEAREST` returns exactly `byte / 255` on both sides, and
-everything downstream of it is plain float maths that lands within a micrometre.
-
-Two things then have to be handled or the ground boils:
-
-- **Swimming.** The floor plane follows the character, so a vertex's world
-  position — and therefore its height — would change under it every frame.
-  `Ground#setCenter` snaps the plane to whole vertex spacings, so every vertex
-  keeps landing on the same world positions and the mesh slides beneath a
-  surface that never moves.
-- **Normals.** Taken analytically from the field by central difference, over
-  exactly half the vertex spacing, so the shading never claims detail the
-  triangles cannot show. The tiling's own normal map rides on top.
-
-Everything in `settings.terrain` is a live uniform, so the landscape can be
-redialled while walking over it:
-
-| `amplitude: 0` | `amplitude: 3.4` (shipped) | `amplitude: 15, ridge: 0.85` |
-| --- | --- | --- |
-| ![Flat](docs/media/terrain-plain.jpg) | ![Rolling](docs/media/terrain-hills.jpg) | ![Peaks](docs/media/terrain-mountains.jpg) |
-
-The two exceptions are `seed` (reshuffles the table) and `segments` (rebuilds the
-floor grid). `octaves` is the real cost dial. Amplitude 0 collapses the whole
-thing back to a flat plane at y = 0, for free.
+Tab 한 번에 두 모드가 번갈아 켜집니다. 캐릭터실에서 적을 상대하거나 점프하는 것은 불가능합니다 — 두 모드는 *동시에* 활성화되지 않습니다.
 
 ---
 
-## The character
+## 4. 화면 구성
 
-![The soldier](docs/media/soldier.jpg)
+### 4-1. 화면 하단 — 액션 HUD
 
-An armoured soldier who fights with a katana in one loadout and a rifle in the
-other. The body and its motion live in different files.
+네 개의 패널이 가로로 정렬되어 있습니다 (위 → 아래):
 
-`public/models/tpose.fbx` is the skin: one textured, skinned mesh rigged to
-Mixamo's `mixamorig:` skeleton, in a T-pose with no animation of its own.
-[CharacterController](src/animation/CharacterController.js) normalises it to
-`settings.character.targetHeight`, converts its materials to PBR and keeps
-whatever maps and colours the export carries.
+1. **이동** — 도약, 무기 교체, 어깨, 캐릭터실
+2. **기술** — 발차기, 베기 일격, 슬라이드 베기, 플립 킥
+3. **술법** — 검격 연속, 소멸, 진홍 의식, 그림자 처형
+4. **가호** — 승천, 그림자 강화 (각 칩에 카운트다운 표시)
 
-`public/animations/*.fbx` are skeleton-only exports — joints, no mesh. Because
-both files name their joints identically, `_retarget()` lifts the first clip out
-of each and binds it to the body, dropping tracks for joints this rig does not
-have. Two corrections happen on the way:
+각 칩은 **현재 상태** 를 색으로 표시합니다:
 
-- **Units.** Translation tracks are rescaled by the ratio the two bind poses
-  imply, measured off the hips, so a body exported in metres takes a clip
-  authored in centimetres without launching into the sky. Rotations need none.
-- **Root motion.** The controller owns where the body is, so the hips'
-  horizontal travel is frozen at its first frame and the clip plays in place.
-  The vertical is kept — that is the gait's bob, not travel. A clip named in
-  `ROOT_MOTION_CLIPS` has that horizontal travel *recorded* on the way past
-  instead of merely dropped, so something else can replay it onto the root.
+- **밝게 표시 (준비됨)** — 지금 누르면 발동함
+- **밝게 표시 (사용 중)** — 시전 중
+- **희미하게 표시 (꺼짐)** — 지금 눌러도 반응 없음 (범위 밖, 콘 밖, 에디터에서 비활성화 등)
 
-Adding a state is one line in `ANIMATION_URLS` plus a weight in `Locomotion`.
+### 4-2. 기타 UI
 
-### Moving
-
-[ThirdPersonController](src/animation/ThirdPersonController.js) integrates the
-input into a velocity rather than applying it as a position delta, and turns the
-body toward where it is *going* rather than where the camera looks.
-[Locomotion](src/animation/Locomotion.js) reads that one speed and blends
-idle → walk → run from it. All three clips play permanently and only their
-weights move, so a stop-start input can never catch the body between fades; walk
-is the master gait and run is slaved to its normalised phase, which is what
-stops the mid-blend shuffle. Playback rate is the body's real speed divided by
-the speed the clips themselves cover, so raising `walkSpeed` or `runSpeed` turns
-the legs over faster to match instead of skating them.
-
-`Space` from a run — never from a walk, never from standing — commits the body to
-[Jump](src/animation/Jump.js). It is a committed move: the stick is dead from
-launch until the feet are down, and the arc's own travel is what carries the
-character. `settings.jump.distance` renormalises that travel to an exact reach in
-metres. At any lesser pace the same class plays the in-place hop from
-`settings.hop`, which never takes the controls — `gaitBleed` is how much of the
-walk or run keeps playing underneath, because taking the whole standing-jump pose
-would plant the legs while the body travels on.
-
----
-
-## Fighting
-
-### Who a press would land on
-
-![Target locks](docs/media/target-rings.jpg)
-
-A body wears a ring because a key would take it — not because it happens to be
-standing inside some cone alongside three others the swing will never reach. The
-question is asked one move at a time, and it is that move's *own* question:
-`findTarget` with its range and its cone, which is the exact call
-`ThirdPersonController` makes on the press. Two rings can come up at once, and
-when they do they are telling the truth: in the shot above the kick and the flip
-kick have locked the body beside you and the slide cut — the only one of them
-long enough to reach — has locked the one out in front, which is why three
-plates are lit and the slash hit is not.
-
-One answer feeds two things — the ring on the ground and the plates along the
-bottom — and the press itself is that same call one line earlier in the frame,
-so a plate can never light over a body no key would reach.
-
-### Aiming an animation that was authored for someone else
-
-A kick is authored against an imaginary opponent at one exact distance and one
-exact angle, and the player is never standing there. There are only three ways
-out of that and two of them are wrong: sliding the body over with an ease reads
-as skating, and letting the foot swing through air a foot short reads as a bug.
-[Attack](src/animation/Attack.js) does the third — **motion warping**.
-
-On the press the target is locked, the spot the clip needs (`standoff` metres
-short of that body, facing it) is resolved once, and the character is carried
-onto it *inside the clip's own approach* — turning first and stepping in second
-(`turnAt`), because that is the order a person does it in. By `hitAt` the body is
-exactly where the animator assumed it was, and the foot lands.
-
-The class never writes a transform. Like `Jump` it only resolves where the body
-*should* be, and `ThirdPersonController` — the one authority over position — puts
-it there. Its clock is the action's own, so the whole move obeys
-`animationSpeed`, the pause key and the hit-stop for free.
-
-The kick (`E`), the slash (`R`) and the slide cut (`T`) are three instances of
-that one class, differing only in the clip they were handed and the settings
-block they read. A press with nothing in range still swings: an attack button
-that does nothing feels broken, and a whiff is information.
-
-### Contact
-
-Three things happen on the same frame and all three are the same beat: the body
-is handed to the ragdoll, the world drops to `hitStopScale` of its speed for
-`hitStop` seconds, and the lens takes a `shake`. Any one alone reads as a glitch;
-together they read as weight. The hit-stop is a scale on `dt` rather than a
-pause, so the animation, the ragdoll and the mist all slow together — and the
-shake runs on real time, so the lens keeps moving while the world holds still.
-
-All three are read off the move that landed, which is the whole difference
-between the attacks at the moment of impact: the kick's is a short flat shove,
-the slash's a longer freeze and a body in two pieces.
-
-### The ragdoll
-
-![Ragdoll](docs/media/ragdoll-death.jpg)
-
-[Ragdoll](src/combat/Ragdoll.js) adds no physics engine, because a ragdoll does
-not need one. What the eye reads as a body falling is bone lengths that never
-change and limbs that cannot bend the wrong way, under gravity, with the ground
-in the way — and all three of those are distance constraints. So the skeleton
-becomes a particle per joint, the bones become constraints, and the whole thing
-is relaxed a few times per substep. The solve is position-based rather than plain
-Verlet: predict, project, then read the velocity back out of the correction,
-which is the form that survives a hit-stop and a paused clock.
-
-Three things stop it reading as a rope:
-
-- **Mass.** The pelvis and chest are heavy, the hands and feet light, held as
-  inverse mass. Corrections split in that ratio, so an arm whips off a torso
-  that barely notices.
-- **Bracing.** Bone lengths alone give a chain that folds flat. A dozen extra
-  constraints across the pelvis, the chest and the spine give the body a shape it
-  is trying to keep while everything else flails.
-- **Limits.** A knee that bends both ways is the most recognisable tell there is,
-  so the hip-to-ankle distance is floored and capped.
-
-Getting points back onto a skeleton is the other half. Every bone is turned to
-*aim* at its child's particle, which leaves the twist about its own axis exactly
-as the death pose had it. The pelvis and the chest have two independent
-directions available, so their full orientation is rebuilt from that frame
-instead — without it, a body face-up and a body face-down are the same aim vector
-and the corpse lands on its side every time.
-
-The handover is not a blend. The mixer is stopped mid-frame and the solver's
-first pose is whatever the clip was showing when the blow connected, which is the
-only way a death looks like it happened to the same body that was standing there.
-
-### The bodies
-
-Five of them stand within `radius` of the player and no nearer than `minRadius`,
-spread over the *area* of that ring rather than its radius, and rejected against
-each other so no two share a patch of ground. One rig is downloaded and every
-enemy is a `SkeletonUtils` clone of it, each idling on its own phase of the same
-clip at its own slight pace — five bodies breathing in unison is the most
-artificial thing a crowd can do.
-
-A corpse does not hold a slot: the refill timer starts when the body dies, so the
-ring is back to full while the old one is still lying there. It stays for
-`corpseTime`, then burns away over `dissolveTime` on a noise dissolve that rises
-from the feet — `discard` rather than alpha, so a body lying inside a bank of
-ground mist never has to be sorted against it.
-
-The export carries no textures at all, so the look is authored rather than
-imported: a cold near-black body with an ember fresnel rim, which is the one
-combination that stays legible against a blue night at twenty metres.
-
----
-
-## The abilities
-
-Four of them, and what makes each an *ability* rather than a technique is what
-it calls on, not how it is aimed: every one is locked exactly as a kick is —
-`findTarget` with its own range and its own cone, on the frame the key goes
-down — and then runs on a clock of its own long after the clip that started it
-has stopped.
-
-That split is the whole shape of these moves. The clip is responsible for two
-beats and nothing more, and it names them itself: `hits` entries in
-[src/config/settings.js](src/config/settings.js), each with a normalised time
-and a `kind`. `App#_onBeat` branches on that `kind` rather than on the move's
-identity, so a fifth multi-beat move would only have to describe its beats to
-get the same treatment — nothing in `App` knows any of these by name. The first
-beat of each of them is the same thing: a promise that costs the body nothing.
-The second lets the effect go, and from there the move reports its own contacts
-back through its own callbacks.
-
-They all also share the beat of contact with the techniques — the ragdoll, the
-hit-stop and the shake, read off the move that landed — so a body taken apart by
-the execution goes down with the same weight as one that took a kick.
-
-### Sword Combo — `Z`
-
-| The cuts cross the ground | The finisher closes |
+| 위치 | 요소 |
 | --- | --- |
-| ![A thrown cut](docs/media/sword-combo-wave.jpg) | ![The finisher](docs/media/sword-combo.jpg) |
-
-The longest reach of them and the longest you are committed for. Two cuts are
-*thrown* — they leave the blade and travel, and what they do happens when they
-arrive rather than on the frame the sweep played — and then the body itself
-follows, ten metres in about four tenths of a second. For those four tenths it
-is not lit skin: [ShadowDash](src/vfx/ShadowDash.js) patches the materials the
-body is *already* wearing into a shade the stage shows through, held together by
-a violet rim, and burns them back on the frame the feet land. So the finisher
-lands on a body still coming back, which is where it should land — the blow is
-what puts the character back in the world. The rift opens *before* the kill, so
-it is centred on a body still standing on its own feet rather than on a ragdoll
-already sliding out of it.
-
-### Unmaking — `B`
-
-| The rune is written | The column comes up through it |
-| --- | --- |
-| ![The rune](docs/media/unmaking-rune.jpg) | ![The column](docs/media/unmaking.jpg) |
-
-Two strikes from where you stand, and the move the other three took their shape
-from. The first beat opens a rune in the ground under the body and stops, and
-the pause is the point: the blow that follows has been promised, so it reads as
-inevitable rather than sudden. The second brings the column up
-through the mark ([RunicBeam](src/vfx/RunicBeam.js)), and what is inside it
-burns away on the same clock the column is on, which is why there is nothing
-left to fall.
-
-### Crimson Rite — `V`
-
-| Three katanas go in | And come out together |
-| --- | --- |
-| ![The blades](docs/media/crimson-rite-blades.jpg) | ![The tear-out](docs/media/crimson-rite.jpg) |
-
-The mark, then the summon. Three blades come up out of the ground around the
-body and go in one after another — each reporting its own contact as it lands,
-so the wound is spent three times rather than once — and then they come out
-together and the ground opens where they were. The caster is handed the stick
-back two thirds of the way through the clip, well before any of that: the rite
-does not need them once it has been let go, and a character rooted for the whole
-of something they are only watching is the commonest way a move this long stops
-being fun.
-
-### Shadow Execution — `C`
-
-| Five circle the mark, closing | And go in at once |
-| --- | --- |
-| ![The ring](docs/media/shadow-execution-ring.jpg) | ![The strike](docs/media/shadow-execution.jpg) |
-
-The same two beats and the same discipline, thrown harder. Five katanas take a
-ring around the mark and turn, tightening, and where the rite's blades arrive one
-at a time these arrive *together* — one frame with five contacts on it, which is
-a different kind of blow and is tuned as one. Then the hold, and the tear-out.
-What comes out of it does not fall over: it comes apart.
-
-## The boons — `N` and `M`
-
-| Ascendance | Shadow Boost |
-| --- | --- |
-| ![Ascendance](docs/media/ascendance.jpg) | ![Shadow Boost](docs/media/shadow-boost.jpg) |
-
-The two moves with nowhere to point them. Both are cast on the ground you are
-standing on, both last ten seconds, and what they change is the body throwing
-them: the light is the quicker of the two (`haste` 1.38, `might` 1.55) and the
-dark is the heavier (1.12 and 1.75). They are independent all the way down, and
-the only places they meet at all are the two lines that fold them into the pace
-and the blow — where a player holding both gets the product rather than the
-louder of the two.
-
-Being carried rather than thrown is what earns them a panel of their own in the
-HUD: while one is up its chip *is* the countdown, so a player asking "how long
-have I got" reads one place. Both are also chips a click can mean, which is a
-thing only a move with nothing to aim can be: a button cannot say where.
-
-Neither will go out while the feet are off the ground. The refusal lives in
-`App#_groundedOnly` rather than in either cast, because it is the same question
-asked twice, and it costs a line of text rather than nothing: a press that
-silently did nothing would read as a dropped key.
+| 화면 하단 중앙 | 토스트 메시지 (2.2초 후 사라짐) |
+| 좌측 상단 | FPS 표시 (F 키 토글) |
+| 화면 가운데 | 에디터(G 키) — 좌측 슬라이더 패널 |
+| 캐릭터실 진입 시 | 좌측 카드 레일, 우측 인스펙터, 상단 컨트롤 바 |
 
 ---
 
-## The equipment studio — `Tab`
+## 5. 스테이지 에디터
 
-![The studio](docs/media/equipment-studio.jpg)
+`G` 키로 여는 개발자 패널입니다. **모든 슬라이더는 `config/settings.js` 의 필드에 직접 바인딩** 되므로, 슬라이더를 움직이면 다음 프레임부터 라이브로 반영됩니다 — 셰이더 재컴파일도 필요 없습니다.
 
-`Tab` moves the body out of the play scene and onto a set built for one thing:
-looking at it and dressing it. It is a *mode*, not a scene-graph trick — entering
-swaps the camera, the lighting and the grade, and hands the pointer to an
-inspection orbit. Nothing is duplicated: the same skeleton, the same mixer and
-the same equipment mounts are on screen in both places, which is what makes gear
-tuned here already correct out in the world.
+폴더 구조:
 
-| Piece | File | Notes |
-| --- | --- | --- |
-| The set | [src/world/StudioStage.js](src/world/StudioStage.js) | Key light *twice* — a spot that carries the shadow and a rect-area softbox at the same angle that does the wrap and the specular roll — plus an area fill from the opposite quarter, a cool rim and a warm kicker behind each shoulder (deliberately unmatched: equal edges read as a mistake, differing ones read as a room), a hair light, and a cyclorama whose halo is placed from the view vector every frame so the silhouette is always framed against the bright part of the wall. |
-| Camera | [src/screens/StudioCamera.js](src/screens/StudioCamera.js) | Free inspection orbit — drag to spin, wheel to dolly, right-drag to pan — plus framing presets that glide and abandon themselves the moment the pointer touches the canvas. |
-| The mode | [src/screens/CharacterScreen.js](src/screens/CharacterScreen.js) | Owns the switch: which scene the post stack draws, which camera, which grade block, and which update path runs. |
-| Panel | [src/ui/CharacterScreenUI.js](src/ui/CharacterScreenUI.js) | Plain DOM. Holds no state: every value is re-read from the manager, so the gizmo and the number boxes can never disagree. |
+- **프리셋** — 현재 설정을 JSON 으로 저장·불러오기·내보내기·가져오기
+- **환경** — 키/림 라이트, IBL, 그림자, 무대 바닥 텍스처
+- **대기, 하늘, 안개** — 헤이즈, 별, 달(본체·위상·마리아), 지면 안개
+- **지형** — 높이·옥타브·시드·세그먼트 (랜덤화 버튼 포함)
+- **나뭇잎** — 톤·역광·잘라내기·바람·낙엽·공중 표류
+- **승천 (빛)** — 5개 레이어 (인장, 빛 기둥, 리본, 폭발, 불씨) + 빛 자체
+- **그림자 강화 (어둠)** — 5개 레이어 (기본 발광, 지면 왜곡, 어두운 기둥, 연기, 소용돌이) + 빛 자체
+- **후처리** — 노출, 블룸, 대비, 채도, 색온도, 비네트, 색수차, 필름 그레인, 안티에일리어싱
+- **카메라** — 거리, 줌 속도, 시야각, 마우스 감도
+- **캐릭터** — 재생 속도, 시간 배율, 회전 속도, 피부 PBR
+- **이동 동작** — 걷기/달리기 속도, 점프, 짧은 점프
+- **무기 (교체)** — 교체 시간, 가장자리 마스크
+- **총격 (소총)** — 렌즈·몸체·총기·피해·외형 6개 서브폴더
+- **강한 사격 (우클릭 꾹)** — 차지 시간, 폭발, 7개 레이어
+- **전투** — 발차기·베기 일격·슬라이드 베기·플립 킥·검격 연속·소멸·진홍 의식·그림자 처형 각각의 폴더 + 적, 래그돌
+- **절단 & 피** — 절단면, 두 토막, 상처, 피
+- **캐릭터실** — 키, 보조광, 림/머리광, 환경광, 세트, 색보정
 
-![Skeleton overlay](docs/media/equipment-studio-skeleton.jpg)
-
-Tuning a placement: pick a category, click an item to equip it, then set the
-joint and nudge the offset. The `Move`/`Rotate` gizmo in the viewport writes the
-same numbers the inspector's sliders do — drag the arrow and the slider follows,
-type in the box and the piece moves. `Skeleton` draws the rig through the armour,
-the joint marker shows where a piece is anchored, and `Motion` plays the walk and
-run so gear can be judged while the body moves.
-
-When it looks right, **Copy defaults** puts the placements on the clipboard as a
-snippet to paste over `defaults` in the catalog. **Save** keeps a loadout in
-localStorage and **Export** writes it as JSON.
-
-### The catalog is the whole content layer
-
-Adding a sword is one entry in
-[src/equipment/EquipmentCatalog.js](src/equipment/EquipmentCatalog.js) and no code
-anywhere else:
-
-```js
-{
-  id: 'sword',
-  name: 'Katana',
-  category: 'weapons',
-  url: './models/weapons/sword.glb',
-  defaults: { bone: 'RightHand', position: [-0.0081, 0.1093, 0.0535], rotation: [-152.9985, 62.0427, -16.8781], scale: 1 }
-}
-```
-
-`weapons` and `attachments` are kept apart on purpose. Weapons is the category
-that will grow rules — drawing and sheathing, a hand it has to be in, damage;
-attachments are cosmetic and never will. Splitting them now makes that later work
-a change to one category rather than a filter over a flat list.
-
-Two things happen to a model on the way in:
-
-- **It loads lazily.** Nothing downloads until something asks for it — the boot
-  path is untouched by a catalog of any size. The rest is prefetched in the
-  background once the screen is actually open.
-- **It wears the body's materials.** Every one of these exports embeds the same
-  four 1024² maps the character's palette already carries; they came out of one
-  Blender scene. So the material is resolved against
-  [MaterialLibrary](src/loaders/MaterialLibrary.js) by name and the export's own
-  is released — zero extra texture memory, and gear lit by exactly the same
-  material the armour is.
-
-### Mounts, and why offsets are in metres
-
-[EquipmentManager](src/equipment/EquipmentManager.js) parents each piece to a
-*mount* rather than straight to the joint, and the mount's scale is the inverse of
-the joint's world scale. The rig is a Mixamo FBX — authored in centimetres, scaled
-by `fbxScale` and again to reach `targetHeight` — so a joint's world scale is
-about 0.01, and an object parented straight to it would arrive a hundred times
-too small with offsets to match. The mount cancels exactly that: everything inside
-it is in metres, whatever the rig was exported at, and the numbers stay valid when
-`targetHeight` moves.
-
-Straight to a bone still works, for code that wants no placement of its own:
-
-```js
-app.character.attach(sword, 'RightHand');
-const head = app.character.getBone('Head');
-```
-
-Bones are indexed under both their raw and namespace-stripped names, so ask for
-the plain joint. Anything parented to one rides the skeleton for free.
+> 팁: **프리셋** 폴더로 시작해서 마음에 드는 환경 조합을 저장해 두면, 매번 슬라이더를 새로 조작하지 않아도 됩니다.
 
 ---
 
-## The editor — `G`
+## 6. 캐릭터실 (장비 점검 모드)
 
-![The editor](docs/media/stage-editor.jpg)
+`Tab` 키로 진입합니다. 플레이어 본체가 턴테이블 위에 놓이고, 궤도 카메라가 자유롭게 회전합니다.
 
-Every tweakable number in the project lives in
-[src/config/settings.js](src/config/settings.js), and
-[src/ui/Editor.js](src/ui/Editor.js) is a lil-gui panel bound straight to it.
+상단 바 그룹:
 
-No controller has an `onChange` handler, because none is needed: the lights, the
-floor shader, the leaves, the rig and the post stack all *sample* those fields
-every frame, so a slider re-lights the scene on the next one with no rebuild and
-no shader recompile. That holds while the clock is paused (`P`), which is when a
-pose is actually worth lighting.
+- **프레임** — 전신 / 상반신 / 머리 / 부위 (확대 구간)
+- **기즈모** — 이동 / 회전 / 끄기 (선택한 부위 조작 도구)
+- **무기** — 현재 들고 있는 무기 이름 (한쪽만 강조)
+- **동작** — 정지 / 대기 / 걷기 / 달리기 (포즈 프리뷰)
+- **오버레이** — 스켈레톤 표시 / 관절 마커
+- **회전** — 턴테이블 속도 슬라이더
+- **닫기** — Tab 키 안내와 함께 캐릭터실 종료
 
-Systems may only ever sample these values — never copy one into a record at
-construction time and read it back later. That single rule is what the whole
-live-editing story rests on.
+좌측 레일:
 
-Presets are snapshots of the whole tree in localStorage, exportable and importable
-as JSON, with a reset to the shipped defaults. Loading merges *into* the live
-objects rather than replacing them, so bindings held by a shader or a light stay
-valid.
+- **카테고리 탭** — 무기 / 장신구
+- **카드** — 한 줄에 부위 하나. 카드를 클릭하면 장착/해제, 작은 상태 칩을 클릭하면 선택만
+- **저장 / 불러오기 / 내보내기 / 기본값 복사 / 비우기** — 좌측 하단 액션
 
-The same fields are on `window`, so the console works too:
+우측 인스펙터 (부위 선택 시):
 
-```js
-settings.terrain.amplitude = 14;                // mountains, walked on the same frame
-settings.terrain.ridge = 1;                     // sharp crests instead of rolling downs
-settings.terrain.amplitude = 0;                 // back to a flat plane, for free
-settings.leaves.drift.count = 900;              // a gale of leaves
-settings.environment.sunIntensity = 4;          // re-lights on the next frame
-settings.environment.floorTextureSet = 'stone'; // swap the soil for flagstone
-settings.global.timeScale = 0.25;               // bullet time, everything at once
-settings.camera.distance = 8;                   // the rig glides out
-```
+- **부착 위치** — 스켈레톤 관절 (손 / 팔 / 등과 엉덩이 / 머리 / 다리 / 기타 관절)
+- **오프셋 X/Y/Z** — 관절 기준 좌표, 단위 미터
+- **회전 X/Y/Z** — 단위 도, XYZ 순서
+- **크기** — 모델 기본 크기 대비 배율
+- **거울 X/Y/Z** — 몸의 중심을 기준으로 접기
+- **탈착 / 배치 초기화** — 액션
 
-And the app itself:
-
-```js
-app.toggleCharacterScreen();                    // same as pressing Tab
-app.enemies.respawnAll();                       // a fresh ring of them
-await app.characterScreen.equipment.equip('scabbard');
-app.characterScreen.equipment.setBone('scabbard', 'Spine');
-console.log(app.characterScreen.equipment.snippet());  // paste over the catalog defaults
-```
-
-## Frame stats — `F`
-
-<img src="docs/media/stats.png" width="240" alt="Frame stats">
-
-Frame rate, average and peak frame time, draw calls and triangles, averaged over a
-half-second window. The counters are sampled at the top of the *next* frame, where
-a frame ends for certain, rather than at each of the several places one can end.
-
-The numbers above came off a real run of a full stage — terrain, litter, drift,
-mist, five enemies and the whole post chain. It sits in the high seventies of
-draw calls as the stage now stands, and crosses a hundred only while one of the
-abilities is on screen.
+> 잠긴 부위(태도, 소총)는 카드에 "고정됨" 으로 표시되며 인스펙터에서 탈착할 수 없습니다. 전투와 이펙트가 이 두 부품을 전제로 작성되었기 때문입니다.
 
 ---
 
-## How it fits together
-
-`core/App.js` builds every subsystem and then does nothing but order the
-per-frame updates. The wiring is deliberately one-directional: no subsystem
-reaches back into App.
-
-The order in `frame()` is the whole architecture, and every step is there because
-something downstream reads what it wrote:
-
-1. **Terrain** — any slider moved this frame lands here, before anything reads a height.
-2. **Air, sky, moon** — one look, re-read together; the moon hangs itself on the light direction the sky has just resolved.
-3. **Controller** — movement first: it sets the heading and the speed the blend animates to. It only ever touches XZ, which is why the body can be dropped onto the ground without the controller knowing the ground exists.
-4. **Ground height + character** — the one place in the project that owns the body's height: the body is stood on the terrain here, and nowhere else.
-5. **Enemies → target rings** — a body felled this frame loses its ring on the same frame.
-6. **Equipment → the body's own shade → boons → the thrown effects** — each hangs off the final pose of the thing before it.
-7. **Floor → ground fog → leaves** — the mist and the litter stand on the height-field bake the floor just refreshed.
-8. **Camera** — on *real* time, so orbiting stays responsive while paused.
-9. **Shadow map, grade, post.**
-
-There are two modes and exactly one thing switches between them:
-`characterScreen.active` decides which scene the post pipeline draws, which camera
-it draws it through, which grade block is in force, and which of the two update
-paths runs. Neither mode knows about the other.
-
-### Layout
+## 7. 아키텍처 개요
 
 ```
 src/
-  core/          renderer, clock, orbit rig, pointer lock, input, shared frame uniforms
-  world/         terrain, floor, sky, moon, air, ground fog, leaves, lighting, the studio set
-  animation/     character rig, retargeting, locomotion, jump, attacks
-  combat/        enemies, ragdoll, gunplay
-  vfx/           the combo, the unmaking, the rite, the execution, the boons, rings, blood
-  equipment/     catalog, lazy library, mount manager
-  screens/       the character screen and its camera
-  postprocessing/ bloom, tone map, grade
-  ui/            action HUD, editor, stats, toasts, loading veil
-  config/        settings.js — every number — and abilities.js — every move
-  shaders/lib/   noise, terrain height field, black-body radiation
+├─ main.js                    — 부트스트랩
+├─ core/
+│  ├─ App.js                  — 모든 서브시스템 소유, 프레임 루프
+│  ├─ Renderer.js             — WebGL2 렌더러, PMREM 환경맵
+│  ├─ CameraRig.js            — 궤도 카메라 + 시점 댐핑
+│  ├─ PointerLook.js          — 마우스 캡처, Esc 해제
+│  ├─ Input.js                — 키보드 (이동 + 공격 버퍼)
+│  ├─ Time.js                 — dt 클램프
+│  ├─ FrameUniforms.js        — 공유 셰이더 uniform (시간, 카메라 등)
+│  └─ Layers.js               — 레이어 마스킹
+├─ world/
+│  ├─ Environment.js          — 씬, PMREM, 환경 라이팅
+│  ├─ Sky.js / Moon.js        — 절차적 하늘, 텍스처 달 본체
+│  ├─ Atmosphere.js           — 헤이즈, 산란
+│  ├─ Terrain.js / Ground.js  — 절차적 지형 + 텍스처 바닥
+│  ├─ Leaves.js / LeafLitter.js — 지면 낙엽, 공중 표류
+│  └─ ContactShadows.js       — 신발 밑 부드러운 그림자
+├─ character/                 — FBX 리깅, IK, 모션 블렌딩
+├─ combat/                    — 적, 명중 판정, 래그돌
+├─ equipment/                 — 장비 카탈로그, 부착, 무기 교체
+├─ animation/                 — 공격 모션, 점프, 달리기
+├─ vfx/                       — 이펙트 (32개 파일, 각자 1가지 일)
+├─ postprocessing/            — Bloom, 그레이딩
+├─ screens/                   — 캐릭터실 (턴테이블 + 인스펙터)
+├─ ui/                        — DOM HUD (lil-gui 에디터, 액션 칩, 토스트, 로더, FPS)
+├─ shaders/                   — GLSL 조각 (terrain, noise)
+├─ config/
+│  ├─ abilities.js            — 액션 HUD 가 한 줄에서 가져오는 스킬 정의
+│  └─ settings.js             — 모든 슬라이더 값의 단일 출처
+└─ loaders/                   — FBX, GLB, 텍스처, 머티리얼
 ```
 
-## Built with
+핵심 설계 원칙:
 
-[three](https://threejs.org) ^0.185 · [lil-gui](https://lil-gui.georgealways.com)
-^0.21 · [vite](https://vite.dev) ^8.1 · no other runtime dependencies.
+1. **App 은 단방향** — 모든 서브시스템을 만들고 순서대로 업데이트만 호출합니다. 어떤 서브시스템도 App 을 참조하지 않습니다.
+2. **설정 객체가 곧 데이터 흐름** — `settings.*` 필드를 바꾸면 다음 프레임부터 셰이더 uniform, 라이팅, 포스트 패스, 캐릭터 동작이 모두 즉시 반영됩니다.
+3. **이펙트는 자기 완결적** — 각 VFX 파일은 한 종류의 이펙트만 담당하며, 발동 조건은 호출자가 정해 줍니다.
+4. **모드는 한 플래그** — `inCharacterScreen` 하나가 카메라, 포스트, 업데이트 경로를 모두 결정합니다.
 
-## Credits
+---
 
-Everything above is lighting and code wrapped around someone else's sculpt, and
-it is worth saying which is which.
+## 8. 기술 스택
 
-- **Character model** — by [Barcelo](https://sketchfab.com/Barcelo) on Sketchfab.
-  The body, the armour and the maps the whole material library is resolved
-  against are all theirs; the studio in `Tab` exists to look at that work.
-- **Animations** — [Mixamo](https://mixamo.com)
-- **Textures** — [ambientCG](https://ambientcg.com)
-- **HDRI** — [Poly Haven](https://polyhaven.com)
+| 범주 | 사용 |
+| --- | --- |
+| **3D 엔진** | three.js 0.185 |
+| **빌드** | Vite 8 |
+| **에디터 UI** | lil-gui |
+| **언어** | 모던 ES 모듈 (ES2022) |
+| **외부 폰트 / CDN** | 없음 (모든 자산 `public/`) |
+| **서버 / DB** | 없음 (정적 호스팅 전용) |
+
+---
+
+## 9. 한글화 노트
+
+이 사본은 원본 프로젝트의 **포크가 아닌 1:1 미러에 가까운 한글화** 입니다.
+
+**바뀐 곳:**
+
+- 모든 사용자 노출 영문 → 한국어 (메뉴, HUD, 토스트, 에디터 라벨, 캐릭터실, 로더 메시지, 성능 표시)
+- 브라우저 탭 제목, 메타 description, README
+
+**바뀌지 않은 곳 (식별자 영문 보존):**
+
+- 모든 코드 식별자 (`ability.id`, `settings.*`, `bone` 이름, 카테고리 `id`)
+- 자산 경로 (`./models/weapons/sword.glb` 등)
+- 셰이더, GLSL 코드, 빌드 출력 파일명
+- 라이선스 (원본 MIT 그대로)
+
+ID 가 필요한 곳(예: `ability.id === 'kick'`)에서 한글이 들어가지 않도록 모든 표시는 `label` 또는 별도 텍스트 필드로 분리했습니다. 즉, **로직 변경 0건, 표시 변경 ~200건**.
+
+---
+
+## 10. 라이선스 및 크레딧
+
+원본 저장소와 동일하게 **MIT 라이선스** 를 따릅니다. 본 저장소는 코드와 자산에 변경을 가하지 않으며, 사용자 노출 문자열만 한국어로 옮긴 파생물입니다.
+
+원본 저작물:
+
+- **three.js** 모델·애니메이션 — 외부 출처 (각 자산의 라이선스는 원본 저장소 크레딧 참조)
+- **moon 텍스처** — 외부 (Moon_002 시리즈)
+- **HDR 환경맵** — `spruit_sunrise.hdr` (Poly Haven CC0)
+- **카메라 셰이더 / 후처리 셰이더** — 원저작자
+
+### 한 줄로 보는 게임 한 사이클
+
+> *"밤의 무대 위에 군인이 서 있다. 시점을 잡고, 태도를 들어 첫 적을 베고, 어둠 속에서 멀리서 날아온 검격이 마무리를 짓는다. 죽은 시체는 천천히 연기로 사라지고, 10초간 자신을 감싸는 빛이 다음 적에게 달려들게 한다."*
+
+즐기세요.

@@ -90,7 +90,7 @@ export class PointerLook {
     this.hint = document.createElement('p');
     this.hint.className = 'look-hint';
     this.hint.setAttribute('aria-hidden', 'true');
-    this.hint.textContent = 'Click to look · Esc frees the cursor';
+    this.hint.textContent = '클릭하여 시점 잡기 · Esc로 커서 해제';
     parent.appendChild(this.hint);
     /** Diffed, so a frame in which nothing changed writes nothing to the DOM. */
     this._hinted = null;

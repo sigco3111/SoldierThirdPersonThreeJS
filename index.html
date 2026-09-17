@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Character Equipment — Three.js character stage</title>
+    <title>캐릭터 장비실 — Three.js 캐릭터 무대</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23121820'/%3E%3Ccircle cx='16' cy='11' r='4' fill='%237fd4ff'/%3E%3Cpath d='M8 28c0-5 3.6-9 8-9s8 4 8 9z' fill='%237fd4ff'/%3E%3C/svg%3E"
@@ -20,18 +20,18 @@
     <!-- Boot / loading veil -->
     <div id="loader" class="loader">
       <div class="loader__inner">
-        <h1 class="loader__title">Character Equipment</h1>
+        <h1 class="loader__title">캐릭터 장비실</h1>
         <div class="loader__bar"><i id="loader-fill"></i></div>
-        <p class="loader__status" id="loader-status">Lighting the stage…</p>
+        <p class="loader__status" id="loader-status">무대 조명 설정 중…</p>
       </div>
     </div>
 
     <!-- The window's keys. The character's own moves are the panels along the
          bottom centre, drawn from `src/config/abilities.js`. -->
     <p class="hint">
-      Click to look · move the mouse to turn · Esc frees the cursor for the panels · wheel to zoom ·
-      1 swap weapon · with the rifle: hold to fire, right-click to sight, H swaps shoulder ·
-      Tab character screen · G editor · F stats · P pause
+      클릭하여 시점 잡기 · 마우스로 회전 · Esc로 커서 해제(메뉴 조작용) · 휠로 줌 ·
+      1 무기 교체 · 소총: 꾹 누르면 발사, 우클릭으로 조준, H로 어깨 교체 ·
+      Tab 캐릭터실 · G 에디터 · F 성능 표시 · P 일시정지
     </p>
 
     <script type="module" src="./src/main.js"></script>

@@ -45,14 +45,14 @@
 export const CATEGORIES = [
   {
     id: 'weapons',
-    label: 'Weapons',
+    label: '무기',
     /** Held gear. One of these is drawn at a time — see `stance` below. */
-    hint: 'Held gear — one is drawn at a time, and 1 swaps between them.'
+    hint: '손에 드는 장비 — 한 번에 하나만 들며, 1번 키로 교체합니다.'
   },
   {
     id: 'attachments',
-    label: 'Attachments',
-    hint: 'Cosmetic. Rides the skeleton and does nothing else.'
+    label: '장신구',
+    hint: '장식용. 스켈레톤에 붙어 다닐 뿐 다른 기능은 없습니다.'
   }
 ];
 
@@ -60,10 +60,10 @@ export const CATEGORIES = [
 export const ITEMS = [
   {
     id: 'sword',
-    name: 'Katana',
+    name: '도검',
     category: 'weapons',
     url: './models/weapons/sword.glb',
-    note: 'Blade runs down +Z from the guard.',
+    note: '칼날이 가드에서 +Z 방향으로 내려갑니다.',
     // The idle the body stands in while this is the weapon that is out — the
     // plain one, which is the stand every other clip was authored against.
     stance: 'sword',
@@ -82,7 +82,7 @@ export const ITEMS = [
   },
   {
     id: 'rifle',
-    name: 'Rifle',
+    name: '소총',
     category: 'weapons',
     url: './models/weapons/Rifle.glb',
     // The export is a Sketchfab scene rather than a bare mesh: the gun is three
@@ -91,7 +91,7 @@ export const ITEMS = [
     // falls through to the whole scene with a warning, which for this file is
     // the same content and a line of noise in the console.
     node: 'Sketchfab_model.001',
-    note: 'Barrel runs down +Z. The ring on it turns.',
+    note: '총신이 +Z 방향입니다. 위의 고리는 회전합니다.',
     stance: 'rifle',
     // The one flag that says "this weapon is fired rather than swung". Drawing
     // it is what puts the whole shooter on — the shoulder camera, the reticle,
@@ -115,10 +115,10 @@ export const ITEMS = [
   },
   {
     id: 'scabbard',
-    name: 'Scabbard',
+    name: '칼집',
     category: 'attachments',
     url: './models/attachements/Scabbard.glb',
-    note: 'Sits on the left hip, mouth forward.',
+    note: '왼쪽 허리에 위치하며, 입구가 앞쪽을 향합니다.',
     defaults: {
       bone: 'Hips',
       position: [0.12, 0.02, 0],
@@ -128,10 +128,10 @@ export const ITEMS = [
   },
   {
     id: 'potion',
-    name: 'Potion',
+    name: '물약',
     category: 'attachments',
     url: './models/attachements/Potion.glb',
-    note: 'Belt flask.',
+    note: '허리춤의 플라스크.',
     defaults: {
       bone: 'Spine',
       position: [-0.14, 0, 0.06],
@@ -150,11 +150,11 @@ export const ITEMS = [
  * is skipped silently.
  */
 export const ATTACH_POINTS = [
-  { group: 'Hands', bones: ['RightHand', 'LeftHand'] },
-  { group: 'Arms', bones: ['RightForeArm', 'RightArm', 'LeftForeArm', 'LeftArm'] },
-  { group: 'Back & hips', bones: ['Spine2', 'Spine1', 'Spine', 'Hips'] },
-  { group: 'Head', bones: ['Head', 'Neck', 'RightShoulder', 'LeftShoulder'] },
-  { group: 'Legs', bones: ['RightUpLeg', 'RightLeg', 'RightFoot', 'LeftUpLeg', 'LeftLeg', 'LeftFoot'] }
+  { group: '손', bones: ['RightHand', 'LeftHand'] },
+  { group: '팔', bones: ['RightForeArm', 'RightArm', 'LeftForeArm', 'LeftArm'] },
+  { group: '등과 엉덩이', bones: ['Spine2', 'Spine1', 'Spine', 'Hips'] },
+  { group: '머리', bones: ['Head', 'Neck', 'RightShoulder', 'LeftShoulder'] },
+  { group: '다리', bones: ['RightUpLeg', 'RightLeg', 'RightFoot', 'LeftUpLeg', 'LeftLeg', 'LeftFoot'] }
 ];
 
 /** Deep copy of an item's shipped placement — never hand the catalog out live. */
