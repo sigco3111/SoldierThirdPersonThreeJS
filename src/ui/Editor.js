@@ -93,7 +93,7 @@ export class Editor {
       selector.setValue(names.includes(state.selected) ? state.selected : (names[0] ?? ''));
     };
 
-    folder.add(state, '이름').name('이름');
+    folder.add(state, 'name').name('이름');
 
     folder
       .add(
@@ -271,7 +271,7 @@ export class Editor {
 
     const h = settings.haze;
     const haze = folder.addFolder('원거리 헤이즈');
-    haze.add(h, '켜기').name('헤이즈 켜기');
+    haze.add(h, 'enabled').name('헤이즈 켜기');
     haze.addColor(h, 'color').name('헤이즈 색상');
     haze.addColor(h, 'sunColor').name('달빛 방향 색상');
     // 1/m, so the number itself means very little; the readout under it is what
@@ -306,7 +306,7 @@ export class Editor {
 
     const s = settings.sky;
     const sky = folder.addFolder('하늘');
-    sky.add(s, '켜기').name('하늘 켜기');
+    sky.add(s, 'enabled').name('하늘 켜기');
     sky.addColor(s, '천정').name('천정');
     R(sky, s, '그라디언트', 0.1, 3, 0.01, '그라디언트');
     R(sky, s, 'sunGlow', 0, 12, 0.05, '달 후광');
@@ -370,7 +370,7 @@ export class Editor {
     // more in and shrinks each one.
     const stars = sky.addFolder('별');
     const st = s.stars;
-    stars.add(st, '켜기').name('별 켜기');
+    stars.add(st, 'enabled').name('별 켜기');
     R(stars, st, '밀도', 40, 600, 5, '밀도');
     R(stars, st, '밝기', 0, 6, 0.05, '밝기');
     R(stars, st, '반짝임', 0, 1, 0.01, '반짝임');
@@ -395,7 +395,7 @@ export class Editor {
     const f = settings.groundFog;
     const R = Editor.range;
 
-    folder.add(f, '켜기').name('켜기');
+    folder.add(f, 'enabled').name('켜기');
     // Density is `count` against `life`: a slot respawns the instant it dies, so
     // the emitter is releasing count/life puffs a second. `count` is also the
     // fill-rate dial — it is the first thing to turn down if the frame is tight.
@@ -459,7 +459,7 @@ export class Editor {
     const t = settings.terrain;
     const R = Editor.range;
 
-    folder.add(t, '켜기').name('지형 켜기');
+    folder.add(t, 'enabled').name('지형 켜기');
     R(folder, t, 'amplitude', 0, 20, 0.05, '높이 (m)');
     R(folder, t, 'scale', 8, 200, 1, '언덕 크기 (m)');
     // The one real cost dial: the floor evaluates this field five times per
@@ -511,7 +511,7 @@ export class Editor {
     const g = settings.leaves;
     const R = Editor.range;
 
-    folder.add(g, '켜기').name('나뭇잎 켜기');
+    folder.add(g, 'enabled').name('나뭇잎 켜기');
     R(folder, g, '크기', 0.02, 0.6, 0.005, '잎 길이 (m)');
     R(folder, g, 'sizeVariance', 0, 0.9, 0.01, '크기 편차');
 
@@ -555,7 +555,7 @@ export class Editor {
     /* ---- the ground ---- */
     const l = g.litter;
     const litter = folder.addFolder('낙엽 (지면)');
-    litter.add(l, '켜기').name('낙엽 켜기');
+    litter.add(l, 'enabled').name('낙엽 켜기');
     // The two cost dials. Live like everything else — they only decide where
     // the leaves are laid out, so moving one re-lays the grid rather than
     // rebuilding a buffer. `perCell` × 400 is the leaf count.
@@ -612,7 +612,7 @@ export class Editor {
     /* ---- the air ---- */
     const d = g.drift;
     const drift = folder.addFolder('표류 (공중)');
-    drift.add(d, '켜기').name('표류 켜기');
+    drift.add(d, 'enabled').name('표류 켜기');
     R(drift, d, 'count', 0, 1024, 1, '잎 개수 (비용)');
     R(drift, d, 'radius', 2, 90, 0.5, '생성 반경 (m)');
     R(drift, d, 'life', 2, 60, 0.5, '수명 (초)');
@@ -664,7 +664,7 @@ export class Editor {
     folder
       .add({ cast: () => this.hooks.onCastAscendance?.() }, 'cast')
       .name('빛을 불러내기 (자신에게)');
-    folder.add(a, '켜기').name('켜기');
+    folder.add(a, 'enabled').name('켜기');
     R(folder, a, 'duration', 1, 60, 0.5, '가호 지속 시간 (초)');
     R(folder, a, 'warn', 0, 6, 0.1, '종료 N초 전 경고 (초)');
     R(folder, a, 'haste', 1, 3, 0.01, '이동 배율');
@@ -822,7 +822,7 @@ export class Editor {
     folder
       .add({ cast: () => this.hooks.onCastShadowBoost?.() }, 'cast')
       .name('어둠을 불러내기 (발밑)');
-    folder.add(s, '켜기').name('켜기');
+    folder.add(s, 'enabled').name('켜기');
     R(folder, s, 'duration', 1, 60, 0.5, '가호 지속 시간 (초)');
     R(folder, s, 'warn', 0, 6, 0.1, '종료 N초 전 경고 (초)');
     R(folder, s, 'haste', 1, 3, 0.01, '이동 배율');
@@ -979,7 +979,7 @@ export class Editor {
     const p = settings.post;
     const R = Editor.range;
 
-    folder.add(p, '켜기').name('켜기');
+    folder.add(p, 'enabled').name('켜기');
     // The only anti-aliasing in the project — the scene never touches the canvas
     // directly, so the renderer's own flag has nothing to act on. It is also the
     // heaviest thing in the stack, hence a dial rather than a constant.
@@ -1055,7 +1055,7 @@ export class Editor {
     const l = settings.locomotion;
     const R = Editor.range;
 
-    folder.add(l, '켜기').name('조작 켜기');
+    folder.add(l, 'enabled').name('조작 켜기');
 
     // How fast the body travels. The stride rate divides these by the clip
     // speeds below, so raising one speeds the legs up to match.
@@ -1087,7 +1087,7 @@ export class Editor {
     // the reach of the jump in metres — 0 hands it back to the animation.
     const jump = folder.addFolder('멀리 점프');
     const j = settings.jump;
-    jump.add(j, '켜기').name('멀리 점프 켜기');
+    jump.add(j, 'enabled').name('멀리 점프 켜기');
     R(jump, j, '거리', 0, 20, 0.1, '거리 (m)');
     R(jump, j, 'minRunFraction', 0, 1, 0.01, '달리기 배율 이상에서 발진');
     R(jump, j, 'landAt', 0.4, 1, 0.01, '조작 복귀 시점');
@@ -1100,7 +1100,7 @@ export class Editor {
     // body instead of planting while the controller travels.
     const hop = folder.addFolder('짧은 점프');
     const h = settings.hop;
-    hop.add(h, '켜기').name('짧은 점프 켜기');
+    hop.add(h, 'enabled').name('짧은 점프 켜기');
     R(hop, h, 'gaitBleed', 0, 1, 0.01, '점프 중 보행 유지');
     R(hop, h, 'landAt', 0.4, 1, 0.01, '발이 닿는 시점');
     R(hop, h, 'blendIn', 0.01, 0.6, 0.01, '블렌드 인 (초)');
@@ -1167,9 +1167,9 @@ export class Editor {
     const g = settings.gunplay;
     const R = Editor.range;
 
-    folder.add(g, '켜기').name('켜기');
+    folder.add(g, 'enabled').name('켜기');
     // The key and the middle mouse button both write this, so it listens.
-    folder.add(g, '어깨', { Left: -1, Right: 1 }).name('어깨').listen();
+    folder.add(g, 'shoulder', { Left: -1, Right: 1 }).name('어깨').listen();
 
     const lens = folder.addFolder('렌즈');
     const c = g.camera;
@@ -1245,7 +1245,7 @@ export class Editor {
     // piece at a time — see `vfx/HealthBars.js`.
     const bars = hurt.addFolder('머리 위 게이지');
     const b = g.healthBar;
-    bars.add(b, '켜기').name('게이지 표시');
+    bars.add(b, 'enabled').name('게이지 표시');
     bars.add(b, 'onlyWounded').name('피격 후에만');
     bars.addColor(b, 'color').name('남은 체력');
     bars.addColor(b, 'trackColor').name('배경');
@@ -1316,7 +1316,7 @@ export class Editor {
     const f = settings.gunplay.focus;
     const folder = parent.addFolder('강한 사격 (우클릭 꾹 누름)');
 
-    folder.add(f, '켜기').name('켜기');
+    folder.add(f, 'enabled').name('켜기');
     // The number the whole gesture is: three seconds of standing still in the
     // open. Under about one and it is not a decision, over about five and
     // nobody ever takes the shot.
@@ -1348,7 +1348,7 @@ export class Editor {
 
     const b = f.burst;
     const burst = folder.addFolder('폭발');
-    burst.add(b, '켜기').name('폭발 켜기');
+    burst.add(b, 'enabled').name('폭발 켜기');
     // The two masters. `radius` sets the scale of every shaped layer at once;
     // `life` is what the shell's and the core's own fractions are measured on.
     R(burst, b, 'radius', 0.5, 8, 0.05, '최대 반경 (m)');
@@ -1460,7 +1460,7 @@ export class Editor {
 
     const e = settings.enemies;
     const enemies = folder.addFolder('적');
-    enemies.add(e, '켜기').name('적 켜기');
+    enemies.add(e, 'enabled').name('적 켜기');
     R(enemies, e, 'count', 0, 20, 1, '동시 존재 수');
     R(enemies, e, 'radius', 2, 40, 0.5, '생성 반경 (m)');
     R(enemies, e, 'minRadius', 1, 20, 0.5, '최소 거리 (m)');
@@ -1525,7 +1525,7 @@ export class Editor {
     const folder = parent.addFolder(title);
     const R = Editor.range;
 
-    folder.add(config, '켜기').name('켜기');
+    folder.add(config, 'enabled').name('켜기');
 
     // Who the blow goes to. `range` and `cone` decide what can be locked at
     // all; `standoff` is the distance the strike is thrown from, and it is the
@@ -1751,7 +1751,7 @@ export class Editor {
     // carries the burn with it and neither control has to be touched again.
     const dash = folder.addFolder('그림자 돌진');
     const d = c.shadowDash;
-    dash.add(d, '켜기').name('켜기');
+    dash.add(d, 'enabled').name('켜기');
     R(dash, d, 'lead', 0, 0.3, 0.005, '돌진 전 시작 (페이즈)');
     R(dash, d, 'linger', 0, 0.3, 0.005, '도착 후 유지 (페이즈)');
     R(dash, d, 'enter', 0.02, 1, 0.01, '어두워지는 시간 (초)');
@@ -1971,7 +1971,7 @@ export class Editor {
     /* ---- 1 · the strokes ---- */
     const trails = folder.addFolder('1. 베기 자국');
     const t = c.trails;
-    trails.add(t, '켜기').name('표시');
+    trails.add(t, 'enabled').name('표시');
     trails.addColor(t, 'coreColor').name('날 색상');
     trails.addColor(t, 'color').name('몸 색상');
     trails.addColor(t, 'edgeColor').name('꼬리 색상');
@@ -2012,7 +2012,7 @@ export class Editor {
     /* ---- 2 · the mist ---- */
     const mist = folder.addFolder('2. 피 안개 & 튐');
     const m = c.mist;
-    mist.add(m, '켜기').name('표시');
+    mist.add(m, 'enabled').name('표시');
     mist.addColor(m, 'deepColor').name('짙은 색상');
     mist.addColor(m, 'color').name('몸 색상');
     mist.addColor(m, 'hotColor').name('뜨거운 색상');
@@ -2041,7 +2041,7 @@ export class Editor {
     /* ---- 3 · the floor ---- */
     const rings = folder.addFolder('3. 격발 충격파');
     const g = c.rings;
-    rings.add(g, '켜기').name('표시');
+    rings.add(g, 'enabled').name('표시');
     rings.addColor(g, 'color').name('선단 색상');
     rings.addColor(g, 'coreColor').name('섬광 색상');
     rings.addColor(g, 'crackColor').name('균열 색상');
@@ -2066,7 +2066,7 @@ export class Editor {
     /* ---- 4 · the ink ---- */
     const aura = folder.addFolder('4. 어두운 후광');
     const a = c.aura;
-    aura.add(a, '켜기').name('표시');
+    aura.add(a, 'enabled').name('표시');
     aura.addColor(a, 'inkColor').name('잉크 색상');
     aura.addColor(a, 'rimColor').name('림 색상');
     R(aura, a, '불투명도', 0, 1, 0.01, '불투명도');
@@ -2085,7 +2085,7 @@ export class Editor {
     /* ---- 5 · the cinders ---- */
     const cinders = folder.addFolder('5. 불씨 & 입자');
     const e = c.cinders;
-    cinders.add(e, '켜기').name('표시');
+    cinders.add(e, 'enabled').name('표시');
     cinders.addColor(e, 'color').name('색상');
     cinders.addColor(e, 'coreColor').name('뜨거운 색상');
     R(cinders, e, 'intensity', 0, 8, 0.05, '밝기');
@@ -2114,7 +2114,7 @@ export class Editor {
     /* ---- 6 · the blades ---- */
     const blades = folder.addFolder('6. 도검');
     const b = c.blades;
-    blades.add(b, '켜기').name('표시');
+    blades.add(b, 'enabled').name('표시');
     R(blades, b, 'count', 1, 6, 1, 'blades');
     // Rebuilds the pool when it moves — the scale is baked into the template
     // rather than onto the instances, so this is the one control here that is
@@ -2237,7 +2237,7 @@ export class Editor {
     /* ---- 2 · the shockwave ---- */
     const rings = folder.addFolder('2. 격발 충격파');
     const g = c.rings;
-    rings.add(g, '켜기').name('표시');
+    rings.add(g, 'enabled').name('표시');
     rings.addColor(g, 'color').name('선단 색상');
     rings.addColor(g, 'coreColor').name('섬광 색상');
     rings.addColor(g, 'crackColor').name('균열 색상');
@@ -2312,7 +2312,7 @@ export class Editor {
     /* ---- 6 · the shatter ---- */
     const shards = folder.addFolder('6. 그림자 폭발');
     const d = c.shards;
-    shards.add(d, '켜기').name('표시');
+    shards.add(d, 'enabled').name('표시');
     shards.addColor(d, 'color').name('면 색상');
     shards.addColor(d, 'rimColor').name('가장자리 색상');
     shards.addColor(d, 'coreColor').name('파단 색상');
@@ -2340,7 +2340,7 @@ export class Editor {
     /* ---- 7 · the embers ---- */
     const cinders = folder.addFolder('7. 입자 & 불씨');
     const n = c.cinders;
-    cinders.add(n, '켜기').name('표시');
+    cinders.add(n, 'enabled').name('표시');
     cinders.addColor(n, 'color').name('불씨 색상');
     cinders.addColor(n, 'coreColor').name('핵심 색상');
     R(cinders, n, 'intensity', 0, 6, 0.05, '밝기');
@@ -2360,7 +2360,7 @@ export class Editor {
     /* ---- 8 · the crescents ---- */
     const trails = folder.addFolder('8. Slash trails');
     const t = c.trails;
-    trails.add(t, '켜기').name('표시');
+    trails.add(t, 'enabled').name('표시');
     trails.addColor(t, 'coreColor').name('날 색상');
     trails.addColor(t, 'color').name('몸 색상');
     trails.addColor(t, 'edgeColor').name('꼬리 색상');
@@ -2401,7 +2401,7 @@ export class Editor {
     /* ---- 9 · the katanas ---- */
     const blades = folder.addFolder('9. Floating katanas');
     const b = c.blades;
-    blades.add(b, '켜기').name('표시');
+    blades.add(b, 'enabled').name('표시');
     R(blades, b, 'count', 1, 6, 1, 'how many come');
     R(blades, b, 'length', 0.3, 3, 0.01, 'blade length (m)');
     blades.add(b, 'flip').name('끝점이 반대쪽');
@@ -2469,7 +2469,7 @@ export class Editor {
     const R = Editor.range;
     const t = settings.targetRing;
 
-    folder.add(t, '켜기').name('켜기');
+    folder.add(t, 'enabled').name('켜기');
     folder.addColor(t, 'color').name('색상');
     R(folder, t, 'radius', 0.2, 3, 0.01, '반경 (m)');
     R(folder, t, '감쇠', 0.2, 12, 0.1, '가장자리 감쇠');
@@ -2501,7 +2501,7 @@ export class Editor {
     const R = Editor.range;
     const s = settings.slice;
 
-    folder.add(s, '켜기').name('절단 켜기');
+    folder.add(s, 'enabled').name('절단 켜기');
 
     const plane = folder.addFolder('절단면 (타격 순간 확인)');
     R(plane, s, 'height', 0.1, 0.9, 0.01, 'cuts at (× height)');
@@ -2521,7 +2521,7 @@ export class Editor {
     // way to see what it is doing.
     const hit = folder.addFolder('두 토막 사이');
     const c = s.collide;
-    hit.add(c, '켜기').name('두 토막 충돌');
+    hit.add(c, 'enabled').name('두 토막 충돌');
     R(hit, c, 'radius', 0, 0.3, 0.005, 'joint size (m)');
     R(hit, c, '반발', 0, 1, 0.01, '반발');
     R(hit, c, 'friction', 0, 1, 0.01, 'grip');
@@ -2538,7 +2538,7 @@ export class Editor {
 
     const blood = folder.addFolder('피');
     const b = s.blood;
-    blood.add(b, '켜기').name('피 켜기');
+    blood.add(b, 'enabled').name('피 켜기');
     blood.addColor(b, 'color').name('피 색상');
     R(blood, b, '밝기', 0, 4, 0.05, '밝기');
     R(blood, b, 'burst', 0, 600, 5, 'droplets on the cut');
@@ -2642,7 +2642,7 @@ export class Editor {
 
     const post = folder.addFolder('색보정');
     const p = s.post;
-    post.add(p, '켜기').name('켜기');
+    post.add(p, 'enabled').name('켜기');
     R(post, p, '노출', 0.1, 3, 0.01, '노출');
     R(post, p, 'bloomStrength', 0, 3, 0.01, '블룸 강도');
     R(post, p, 'bloomRadius', 0, 1.5, 0.01, '블룸 반경');
