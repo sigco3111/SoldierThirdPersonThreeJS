@@ -8,6 +8,10 @@
 
 ---
 
+## 📸 실제 실행 화면
+
+![Soldier 3인칭 템플릿 실제 실행 화면](11-SoldierThirdPersonThreeJS.jpg)
+
 ## 1. 시작하기
 
 ### 1-1. 라이브 데모 (추천)
